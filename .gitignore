@@ -8,6 +8,8 @@
 /build
 /dist
 /public
+log.json
+.idea
 
 # misc
 .DS_Store
