@@ -14,11 +14,11 @@ const bot = new Telegraf(BOT_TOKEN);
 bot.command('start', startCommand());
 
 bot.on('message', async message => {
-  fs.writeFileSync('log.json', JSON.stringify(message, null, 2))
+  ENVIRONMENT !== 'production' && fs.writeFileSync('log.json', JSON.stringify(message, null, 2))
 });
 
 export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
-  ENVIRONMENT !== 'production' && await production(req, res, bot);
+  await production(req, res, bot);
 };
 
 ENVIRONMENT !== 'production' && development(bot);
