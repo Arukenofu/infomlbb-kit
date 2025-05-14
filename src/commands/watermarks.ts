@@ -1,5 +1,5 @@
 import { Context } from 'telegraf';
-import { getPhotolink } from '../helpers/get-photolink';
+import { getPhotolink } from '../shared/helpers/get-photolink';
 import { createOverlay, createWatermark } from '../actions/watermark';
 
 const watermarkCommand = () => async (

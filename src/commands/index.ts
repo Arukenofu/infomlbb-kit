@@ -1,8 +1,9 @@
 import { startCommand } from './start';
 import { helpCommand } from './help';
 import { Telegraf } from 'telegraf';
-import { overlayCommand, twatermarkCommand, watermarkCommand } from './watermark';
+import { overlayCommand, twatermarkCommand, watermarkCommand } from './watermarks';
 import { formatCommand } from './format';
+import { adjustmentCommand } from './adjustment';
 
 const commands = {
   'start': startCommand,
@@ -10,7 +11,8 @@ const commands = {
   'overlay': overlayCommand,
   'watermark': watermarkCommand,
   'twatermark': twatermarkCommand,
-  'format': formatCommand
+  'format': formatCommand,
+  'adjustment': adjustmentCommand
 }
 
 export function injectCommands(bot: Telegraf) {
@@ -21,5 +23,6 @@ export function injectCommands(bot: Telegraf) {
 
 export * from './help';
 export * from './start';
-export * from './watermark';
+export * from './watermarks';
 export * from './format';
+export * from './adjustment';

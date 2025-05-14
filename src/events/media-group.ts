@@ -2,7 +2,7 @@ import { Context } from 'telegraf';
 import { InputMediaDocument} from 'telegraf/src/core/types/typegram';
 import { PhotoMediaGroupContext } from '@dietime/telegraf-media-group';
 
-import { getPhotolink } from '../helpers/get-photolink';
+import { getPhotolink } from '../shared/helpers/get-photolink';
 import { createOverlay, createWatermark } from '../actions/watermark';
 
 const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {

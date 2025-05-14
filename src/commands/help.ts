@@ -12,6 +12,7 @@ const message =
 
 <b>Работа с патчнотами</b>
 <code>/format [текст патчнотов]</code> - Форматирование патчнотов
+<code>/adjustment [ + | - | = ] - Прикрепить текст изменения героя к отправленному изображению</code>
 `
 
 const helpCommand = () => async (context: Context) => {

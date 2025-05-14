@@ -1,16 +1,26 @@
 import { BlendMode, Jimp } from 'jimp';
+import { Images } from '../shared/enums/images';
+import { JimpReadType } from '../shared/types/jimp-types';
 
-type JimpReadType = Awaited<ReturnType<typeof Jimp.read>>;
+interface CreateOverlayParameters {
+  width?: number;
+  opacity?: number;
+}
 
-async function createOverlay(photoLink: string | JimpReadType) {
+async function createOverlay(photoLink: string | JimpReadType, params: CreateOverlayParameters = {}) {
   const [image, overlay] = await Promise.all([
     typeof photoLink === "string" ? Jimp.read(photoLink) : photoLink,
-    Jimp.read('https://hdknnncxvrdqnyijnprx.supabase.co/storage/v1/object/public/watermarks//overlay.png')
+    Jimp.read(Images.Overlay)
   ]);
 
-  overlay.opacity(.09);
+  const {
+    width = 1250,
+    opacity = 0.09
+  } = params;
+
+  overlay.opacity(opacity);
   overlay.resize({
-    w: 1250
+    w: width
   });
 
   image.composite(overlay, 0, 0, {
@@ -24,7 +34,7 @@ async function createOverlay(photoLink: string | JimpReadType) {
 async function createWatermark(photoLink: string | JimpReadType) {
   const [image, watermark] = await Promise.all([
     typeof photoLink === "string" ? Jimp.read(photoLink) : photoLink,
-    Jimp.read('https://hdknnncxvrdqnyijnprx.supabase.co/storage/v1/object/public/watermarks//watermark.png')
+    Jimp.read(Images.Watermark)
   ]);
 
   watermark.resize({

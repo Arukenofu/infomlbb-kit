@@ -1,5 +1,10 @@
 import { Context } from 'telegraf';
-import { overlayCommand, watermarkCommand, twatermarkCommand } from '../commands';
+import {
+  overlayCommand,
+  watermarkCommand,
+  twatermarkCommand,
+  adjustmentCommand,
+} from '../commands';
 
 const onPhoto = () => async (
   context: Context
@@ -16,6 +21,8 @@ const onPhoto = () => async (
     await watermarkCommand()(context);
   } else if (caption.startsWith('/twatermark') || caption === '') {
     await twatermarkCommand()(context);
+  } else if (caption.startsWith('/adjustment')) {
+    await adjustmentCommand()(context);
   }
 }
 
