@@ -1,5 +1,3 @@
-import 'module-alias/register.js'
-
 import { Telegraf } from 'telegraf';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
