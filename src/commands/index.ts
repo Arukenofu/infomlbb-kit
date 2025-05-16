@@ -4,6 +4,7 @@ import { Telegraf } from 'telegraf';
 import { overlayCommand, twatermarkCommand, watermarkCommand } from './watermarks';
 import { formatCommand } from './format';
 import { adjustmentCommand } from './adjustment';
+import { patchImage } from '@/commands/patch-image';
 
 const commands = {
   'start': startCommand,
@@ -12,7 +13,8 @@ const commands = {
   'watermark': watermarkCommand,
   'twatermark': twatermarkCommand,
   'format': formatCommand,
-  'adjustment': adjustmentCommand
+  'adjustment': adjustmentCommand,
+  'patchimage': patchImage
 }
 
 export function injectCommands(bot: Telegraf) {

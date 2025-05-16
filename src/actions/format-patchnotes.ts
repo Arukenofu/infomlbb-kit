@@ -1,4 +1,17 @@
-function formatPatchNotes(text: string): string {
+interface FormatPatchNotesOptions {
+  lineBreak?: boolean;
+  wrapParagraph?: boolean;
+}
+
+function formatPatchNotes(
+    text: string,
+    options: FormatPatchNotesOptions = {}
+): string {
+  const {
+    lineBreak = true,
+    wrapParagraph = false,
+  } = options;
+
   const lines = text.split('\n');
   const output: string[] = [];
   let quoteBuffer: string[] = [];
@@ -20,8 +33,7 @@ function formatPatchNotes(text: string): string {
 
     if (/^(Усиление|Ослабление|Изменение) .+/.test(line)) {
       flushQuotes();
-      output.push(`
-<b><u>${line}</u></b>`);
+      output.push((lineBreak ? '\n' : '') + `<b><u>${line}</u></b>`);
       continue;
     }
 
@@ -30,11 +42,19 @@ function formatPatchNotes(text: string): string {
       continue;
     }
 
-    quoteBuffer.push(line);
+    quoteBuffer.push(wrapParagraph ? `<p>${line}</p>` : line);
   }
 
   flushQuotes();
-  return output.join('\n');
+
+  return output.join((lineBreak ? '\n' : ''));
 }
 
-export { formatPatchNotes };
+function replaceEmojisWithStickers(text: string, stickerLinks: string[]): string {
+  let index = 0;
+  return text.replace(/\p{Emoji_Presentation}/gu, () => {
+    return `<custom-emoji-wrapper><img src="${stickerLinks[index++]}" alt=""></custom-emoji-wrapper>`;
+  });
+}
+
+export { formatPatchNotes, replaceEmojisWithStickers };

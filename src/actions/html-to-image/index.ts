@@ -1,0 +1,35 @@
+import puppeteer from 'puppeteer';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+async function htmlToImage(htmlContent: string) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  const cssPath = path.resolve(__dirname, 'styles.css');
+
+  const cssContent = fs.readFileSync(cssPath, 'utf8');
+
+  const finalHtml = `
+    <html lang="ru">
+      <head>
+        <style>${cssContent}</style>
+      </head>
+      <body>
+        <div class="content">
+            ${htmlContent}
+        </div>
+      </body>
+    </html>`
+
+  await page.setContent(finalHtml, { waitUntil: 'networkidle0' });
+  await page.setViewport({ width: 768, height: 1024 });
+
+  const screenshot = await page.screenshot({fullPage: true});
+
+  await browser.close();
+
+  return screenshot;
+}
+
+export { htmlToImage };
