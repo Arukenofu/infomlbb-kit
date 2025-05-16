@@ -1,7 +1,7 @@
 import { Context } from 'telegraf';
-import { getStickersLink } from '@/shared/helpers/get-stickers-link';
-import { formatPatchNotes, replaceEmojisWithStickers } from '@/actions/format-patchnotes';
-import { htmlToImage } from '@/actions/html-to-image';
+import { getStickersLink } from '../shared/helpers/get-stickers-link';
+import { formatPatchNotes, replaceEmojisWithStickers } from '../actions/format-patchnotes';
+import { htmlToImage } from '../actions/html-to-image';
 
 const patchImage = () => async (
   context: Context

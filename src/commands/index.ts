@@ -4,7 +4,7 @@ import { Telegraf } from 'telegraf';
 import { overlayCommand, twatermarkCommand, watermarkCommand } from './watermarks';
 import { formatCommand } from './format';
 import { adjustmentCommand } from './adjustment';
-import { patchImage } from '@/commands/patch-image';
+import { patchImage } from './patch-image';
 
 const commands = {
   'start': startCommand,
