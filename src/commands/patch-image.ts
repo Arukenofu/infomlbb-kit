@@ -7,8 +7,11 @@ const patchImage = () => async (
   context: Context
 ) => {
   if (!('entities' in context.message!) || !('payload' in context)) {
+    console.log('validation error');
     return;
   }
+  console.log(context.message!.entities);
+
   console.log('validation passed');
 
   const entities = context.message!.entities!;
