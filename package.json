@@ -15,10 +15,12 @@
   },
   "dependencies": {
     "@dietime/telegraf-media-group": "^1.0.5",
+    "@sparticuz/chromium": "^133.0.0",
     "@vercel/node": "^3.2.24",
     "dotenv-cli": "^7.4.2",
     "jimp": "^1.6.0",
     "puppeteer": "^24.8.2",
+    "puppeteer-core": "^24.8.2",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
