@@ -13,16 +13,11 @@
     "prettier": "prettier --write 'src/**/*.ts'",
     "lint": "tsc --noemit"
   },
-  "_moduleAliases": {
-    "@": "src",
-    "#types": "src/shared/types"
-  },
   "dependencies": {
     "@dietime/telegraf-media-group": "^1.0.5",
     "@vercel/node": "^3.2.24",
     "dotenv-cli": "^7.4.2",
     "jimp": "^1.6.0",
-    "module-alias": "^2.2.3",
     "puppeteer": "^24.8.2",
     "telegraf": "^4.16.3"
   },
