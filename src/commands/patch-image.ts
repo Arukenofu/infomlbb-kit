@@ -6,13 +6,7 @@ import { htmlToImage } from '../actions/html-to-image';
 const patchImage = () => async (
   context: Context
 ) => {
-  if (!('entities' in context.message!)) {
-    await context.sendMessage('Эмодзи не заданы');
-    return;
-  }
-
-  if (!('payload' in context)) {
-    await context.sendMessage('Текст патчнотов не задан');
+  if (!('entities' in context.message!) || !('payload' in context)) {
     return;
   }
 
