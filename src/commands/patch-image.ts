@@ -31,8 +31,6 @@ const patchImage = () => async (
 
   const screenshot = await htmlToImage(html);
   console.log('screenshot passed');
-
-  await context.sendDocument({source: Buffer.from(new Uint8Array(screenshot.buffer)), filename: 'photo.png'})
 }
 
 export {patchImage}
