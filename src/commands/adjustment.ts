@@ -1,6 +1,5 @@
 import { Context } from 'telegraf';
-import {getAdjustmentLinkByPayload} from "../actions/hero-adjustment";
-import {getPhotolink} from "../shared/helpers/get-photolink";
+import { getAdjustmentLinkByPayload, getAdjustmentParameters } from '../actions/hero-adjustment';
 import { Images } from '../shared/enums/images';
 import { Jimp } from 'jimp';
 import { cropImage } from '../shared/helpers/crop-image';
@@ -8,23 +7,21 @@ import { cropImage } from '../shared/helpers/crop-image';
 const adjustmentCommand = () => async (
   context: Context,
 ) => {
-  if (!('photo' in context.message!)) {
-    await context.sendMessage('Прикрепите фотографию.');
+  const {imageLink, adjustmentCommand} = await getAdjustmentParameters(context);
 
-    return;
+  if (!adjustmentCommand) {
+    await context.sendMessage(ErrorMessages.NO_ADJUSTMENT, {parse_mode: "HTML"}); return;
   }
 
-  const payload = String(context.message.caption?.split(' ')[1] || '').toLowerCase();
-  const adjustmentImageUrl = getAdjustmentLinkByPayload(payload);
+  if (!imageLink) {
+    await context.sendMessage(ErrorMessages.NO_IMAGE, {parse_mode: 'HTML'}); return;
+  }
+
+  const adjustmentImageUrl = getAdjustmentLinkByPayload(adjustmentCommand);
 
   if (adjustmentImageUrl === null) {
-      await context.sendMessage(
-`Неправильно был задан параметр, выберите из текущего списка:
-Бафф: бафф, усиление, +
-Нерф: нерф, ослабление, -
-Изменение: изменение, =`); return;
+    await context.sendMessage(ErrorMessages.NO_ADJUSTMENT, {parse_mode: "HTML"}); return;
   }
-  const imageLink = await getPhotolink(context.message.photo, context.telegram);
 
   const [
     image,
@@ -74,6 +71,19 @@ const adjustmentCommand = () => async (
   const output = await image.getBuffer('image/png');
 
   await context.sendDocument({source: output, filename: 'image.png'});
+}
+
+enum ErrorMessages {
+  NO_ADJUSTMENT = `Неправильно был задан параметр изменения героя, выберите из текущего списка:
+Бафф: бафф, усиление, +
+Нерф: нерф, ослабление, -
+Изменение: изменение, =
+
+<code>/adjustment [нерф | бафф | изменение]</code>`,
+
+
+  NO_IMAGE = `Прикрепите изображение к команде или укажите третьим параметром правильное имя героя:
+<code>/adjustment [нерф | бафф] [имя_героя если без изображения]</code>`
 }
 
 export { adjustmentCommand }

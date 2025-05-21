@@ -1,10 +1,11 @@
+import { Telegraf } from 'telegraf';
 import { startCommand } from './start';
 import { helpCommand } from './help';
-import { Telegraf } from 'telegraf';
 import { overlayCommand, twatermarkCommand, watermarkCommand } from './watermarks';
 import { formatCommand } from './format';
 import { adjustmentCommand } from './adjustment';
 import { patchImage } from './patch-image';
+import { wallpaperCommand } from './wallpaper';
 
 const commands = {
   'start': startCommand,
@@ -14,7 +15,8 @@ const commands = {
   'twatermark': twatermarkCommand,
   'format': formatCommand,
   'adjustment': adjustmentCommand,
-  'patchimage': patchImage
+  'patchimage': patchImage,
+  'wallpaper': wallpaperCommand,
 }
 
 export function injectCommands(bot: Telegraf) {
@@ -22,9 +24,10 @@ export function injectCommands(bot: Telegraf) {
     bot.command(name, handlerFactory());
   }
 }
-
-export * from './help';
 export * from './start';
+export * from './help';
 export * from './watermarks';
 export * from './format';
 export * from './adjustment';
+export * from './patch-image';
+export * from './wallpaper';
