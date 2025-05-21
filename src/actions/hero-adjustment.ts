@@ -7,7 +7,7 @@ import { translateHero } from '../shared/helpers/translate-hero';
 const adjustmentCommands = {
   buff: ['бафф', 'усиление', '+'],
   nerf: ['нерф', 'ослабление', '-'],
-  adjustment: ['изменение', '=']
+  adjustment: ['изменения', 'изменение', '=']
 }
 
 async function getAdjustmentParameters(
@@ -43,6 +43,20 @@ function getAdjustmentLinkByPayload(
   }
 }
 
+async function sendFormattedHeroAdjustmentText(context: Context, command: string) {
+  const findAdjustmentEntry = (payload: string) => {
+    for (const commands of Object.values(adjustmentCommands)) {
+      if (commands.includes(payload)) {
+        return commands[1];
+      }
+    }
+    return undefined;
+  }
 
+  await context.sendMessage(`
+<b>${context?.text?.split(' ')?.[2] || 'имя_героя'} получит <u>${findAdjustmentEntry(command)}</u> в следующем обновлении</b>
 
-export {adjustmentCommands, getAdjustmentLinkByPayload, getAdjustmentParameters}
+#MLBB #MobileLegends #Mobile_Legends #MLBB_Other`, {parse_mode: 'HTML'});
+}
+
+export {adjustmentCommands, getAdjustmentLinkByPayload, getAdjustmentParameters, sendFormattedHeroAdjustmentText}

@@ -1,7 +1,11 @@
 import { Context } from 'telegraf';
-import { getAdjustmentLinkByPayload, getAdjustmentParameters } from '../actions/hero-adjustment';
-import { Images } from '../shared/enums/images';
 import { Jimp } from 'jimp';
+import {
+  getAdjustmentLinkByPayload,
+  getAdjustmentParameters,
+  sendFormattedHeroAdjustmentText
+} from '../actions/hero-adjustment';
+import { Images } from '../shared/enums/images';
 import { cropImage } from '../shared/helpers/crop-image';
 
 const adjustmentCommand = () => async (
@@ -22,6 +26,10 @@ const adjustmentCommand = () => async (
   if (adjustmentImageUrl === null) {
     await context.sendMessage(ErrorMessages.NO_ADJUSTMENT, {parse_mode: "HTML"}); return;
   }
+
+  await context.sendMessage('Создание изображения...');
+
+  await sendFormattedHeroAdjustmentText(context, adjustmentCommand);
 
   const [
     image,

@@ -1,56 +1,40 @@
 import { Context } from 'telegraf';
 import { getPhotolink } from '../shared/helpers/get-photolink';
 import { createOverlay, createWatermark } from '../actions/watermark';
+import { JimpReadType } from '../shared/types/jimp-types';
 
-const watermarkCommand = () => async (
-  context: Context
+const processImage = async (
+  context: Context,
+  processor: (photoLink: string) => Promise<JimpReadType>,
 ) => {
   if (!('photo' in context.message!)) {
     await context.sendMessage('Прикрепите фотографию.');
-
     return;
   }
 
+  await context.sendMessage('Создание изображения...')
+
   const photoLink = await getPhotolink(context.message.photo, context.telegram);
-  const image = await createWatermark(photoLink!);
+  const image = await processor(photoLink!);
 
   const output = await image.getBuffer('image/png');
 
-  await context.sendDocument({source: output, filename: 'image.png'});
-}
+  await context.sendDocument({ source: output, filename: 'image.png' });
+};
 
-const twatermarkCommand = () => async (
-  context: Context
-) => {
-  if (!('photo' in context.message!)) {
-    await context.sendMessage('Прикрепите фотографию.');
+const watermarkCommand = () => async (context: Context) => {
+  await processImage(context, createWatermark);
+};
 
-    return;
-  }
+const overlayCommand = () => async (context: Context) => {
+  await processImage(context, createOverlay);
+};
 
-  const photoLink = await getPhotolink(context.message.photo, context.telegram);
-  const image = await createOverlay(photoLink!).then((value) => {
-    return createWatermark(value);
+const twatermarkCommand = () => async (context: Context) => {
+  await processImage(context, async (photoLink) => {
+    const overlayed = await createOverlay(photoLink)
+    return createWatermark(overlayed);
   });
-  const output = await image.getBuffer('image/png');
+};
 
-  await context.sendDocument({source: output, filename: 'image.png'});
-}
-
-const overlayCommand = () => async (
-  context: Context
-) => {
-  if (!('photo' in context.message!)) {
-    await context.sendMessage('Прикрепите фотографию.');
-
-    return;
-  }
-
-  const photoLink = await getPhotolink(context.message.photo, context.telegram);
-  const image = await createOverlay(photoLink!);
-  const output = await image.getBuffer('image/png');
-
-  await context.sendDocument({source: output, filename: 'image.png'});
-}
-
-export {watermarkCommand, overlayCommand, twatermarkCommand};
+export { watermarkCommand, overlayCommand, twatermarkCommand };
