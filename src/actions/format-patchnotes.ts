@@ -31,12 +31,20 @@ function formatPatchNotes(
       continue;
     }
 
-    if (/^([bu]): /i.test(line)) {
+    let tags: string[] = [];
+    while (true) {
+      const match = line.match(/^([bu]):\s*/i);
+      if (!match) break;
+      tags.push(match[1].toLowerCase());
+      line = line.slice(match[0].length);
+    }
+    if (tags.length) {
       flushQuotes();
-      const [prefix, ...rest] = line.split(':');
-      const content = rest.join(':').trim();
-      const tag = prefix.toLowerCase();
-      output.push(`<${tag}>${content}</${tag}>`);
+      let wrapped = line;
+      for (const tag of tags.reverse()) {
+        wrapped = `<${tag}>${wrapped}</${tag}>`;
+      }
+      output.push(wrapped);
       continue;
     }
 
@@ -61,6 +69,7 @@ function formatPatchNotes(
 
   return output.join(lineBreak ? '\n' : '');
 }
+
 
 
 function replaceEmojisWithStickers(text: string, stickerLinks: string[]): string {
