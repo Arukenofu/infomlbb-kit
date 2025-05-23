@@ -1,3 +1,5 @@
+import { findHero } from '../shared/helpers/generate-russian-forms';
+
 interface FormatPatchNotesOptions {
   lineBreak?: boolean;
   wrapParagraph?: boolean;
@@ -50,7 +52,25 @@ function formatPatchNotes(
 
     if (/^(Усиление|Ослабление|Изменение) .+/.test(line)) {
       flushQuotes();
-      output.push((lineBreak ? '\n' : '') + `<b><u>${line}</u></b>`);
+
+      const hasEmoji = /\p{Emoji_Presentation}/gu.test(line);
+      const linePrefix = lineBreak ? '\n' : '';
+
+      let formattedLine = `<b><u>${line}`;
+
+      if (!hasEmoji) {
+        const heroName = line.split(' ').slice(1).join(' ').trim().toLowerCase();
+        const heroData = findHero(heroName);
+
+        if (heroData && heroData.icon) {
+          console.log(heroData.icon);
+          formattedLine += ` <custom-emoji-wrapper><img src="${heroData.icon}" alt=""></custom-emoji-wrapper>`;
+        }
+      }
+
+      formattedLine += `</u></b>`;
+      output.push(linePrefix + formattedLine);
+
       continue;
     }
 
@@ -70,11 +90,9 @@ function formatPatchNotes(
   return output.join(lineBreak ? '\n' : '');
 }
 
-
-
-function replaceEmojisWithStickers(text: string, stickerLinks: string[]): string {
+function replaceEmojisWithStickers(html: string, stickerLinks: string[]): string {
   let index = 0;
-  return text.replace(/\p{Emoji_Presentation}/gu, () => {
+  return html.replace(/\p{Emoji_Presentation}/gu, () => {
     return `<custom-emoji-wrapper><img src="${stickerLinks[index++]}" alt=""></custom-emoji-wrapper>`;
   });
 }

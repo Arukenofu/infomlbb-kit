@@ -1,4 +1,10 @@
-const MLBB_HEROES: Record<string, { ru: string; en: string }> = {
+interface Hero {
+  ru: string;
+  en: string;
+  icon?: string;
+}
+
+const MLBB_HEROES: Record<string, Hero> = {
   1: { ru: "Мия", en: "Miya" },
   2: { ru: "Бальмонд", en: "Balmond" },
   3: { ru: "Сабер", en: "Saber" },
