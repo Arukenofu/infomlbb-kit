@@ -1,4 +1,5 @@
 import { findHero } from '../shared/helpers/generate-russian-forms';
+import { getHeroIcon } from '../shared/helpers/get-icon';
 
 interface FormatPatchNotesOptions {
   lineBreak?: boolean;
@@ -62,9 +63,10 @@ function formatPatchNotes(
         const heroName = line.split(' ').slice(1).join(' ').trim().toLowerCase();
         const heroData = findHero(heroName);
 
-        if (heroData && heroData.icon) {
-          console.log(heroData.icon);
-          formattedLine += ` <custom-emoji-wrapper><img src="${heroData.icon}" alt=""></custom-emoji-wrapper>`;
+        if (heroData) {
+          const icon = getHeroIcon(heroData.en);
+
+          formattedLine += ` <custom-emoji-wrapper><img src="${icon}" alt=""></custom-emoji-wrapper>`;
         }
       }
 

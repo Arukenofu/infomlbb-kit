@@ -96,7 +96,7 @@ const MLBB_HEROES: Record<string, Hero> = {
   89: { ru: "Ванван", en: "Wanwan" },
   90: { ru: "Сильванна", en: "Silvanna" },
   91: { ru: "Сесилион", en: "Cecilion" },
-  92: { ru: "Кармила", en: "Carmilla" },
+  92: { ru: "Кармилла", en: "Carmilla" },
   93: { ru: "Атлас", en: "Atlas" },
   94: { ru: "Пополь-и-Купа", en: "Popol-and-Kupa" },
   95: { ru: "Чонг", en: "Yu-Zhong" },
@@ -130,7 +130,7 @@ const MLBB_HEROES: Record<string, Hero> = {
   123: { ru: "Чичи", en: "Cici" },
   124: { ru: "Чип", en: "Chip" },
   125: { ru: "Чжусинь", en: "Zhuxin" },
-  126: { ru: "Суё", en: "Suyou" },
+  126: { ru: "Су-Ё", en: "Suyou" },
   127: { ru: "Лукас", en: "Lukas" },
   128: { ru: "Калея", en: "Kalea" }
 };

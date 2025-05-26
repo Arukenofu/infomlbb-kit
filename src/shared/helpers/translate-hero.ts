@@ -1,8 +1,5 @@
 import { MLBB_HEROES } from '../constants/heroes';
-
-function detectScript(text: string) {
-  return /[а-яё]/i.test(text) ? 'ru' : 'en';
-}
+import { detectScript } from './detect-script';
 
 function translateHero(name: string, to: 'ru' | 'en' | null = null) {
   const inputLang = detectScript(name);

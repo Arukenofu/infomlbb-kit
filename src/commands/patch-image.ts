@@ -12,7 +12,7 @@ const patchImage = () => async (
 
   await context.sendMessage('Создание изображения...');
 
-  const entities = context.message!.entities!;
+  const entities = context.message.entities!;
   const stickersLink = entities
     .filter(entry => entry.type === 'custom_emoji')
     .map(entry => entry.custom_emoji_id);
