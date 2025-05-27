@@ -50,7 +50,7 @@ async function createWatermark(
     width = image.bitmap.width * 0.8,
     opacity = .35,
     xAlign = Alignments.Center,
-    yAlign = .65,
+    yAlign = .75,
     blendMode
   } = options;
 

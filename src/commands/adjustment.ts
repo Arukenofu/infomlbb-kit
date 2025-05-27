@@ -60,6 +60,7 @@ const adjustmentCommand = () => async (
     width: image.bitmap.width * .42,
     watermarkInstance: watermark,
     opacity: 1,
+    yAlign: .65
   });
 
   const output = await image.getBuffer('image/png');
