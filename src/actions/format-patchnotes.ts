@@ -1,5 +1,5 @@
 import { findHero } from '../shared/helpers/generate-russian-forms';
-import { getHeroIcon } from '../shared/helpers/get-icon';
+import {getHeroIcon} from "../shared/helpers/supabase-storage";
 
 interface FormatPatchNotesOptions {
   lineBreak?: boolean;

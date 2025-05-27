@@ -1,7 +1,7 @@
 import { Images } from '../shared/enums/images';
 import { Context } from 'telegraf';
 import { getPhotolink } from '../shared/helpers/get-photolink';
-import { getWallpaper } from '../shared/helpers/get-wallpaper';
+import { getWallpaper } from '../shared/helpers/supabase-storage';
 import { translateHero } from '../shared/helpers/translate-hero';
 
 const adjustmentCommands = {
@@ -54,7 +54,7 @@ async function sendFormattedHeroAdjustmentText(context: Context, command: string
   }
 
   await context.sendMessage(`
-<b>${context?.text?.split(' ')?.[2] || 'имя_героя'} получит <u>${findAdjustmentEntry(command)}</u> в следующем обновлении</b>
+<b>${context?.text?.split(' ')?.[2].replace('-', ' ').toCapitalizeWords() || 'имя_героя'} получит <u>${findAdjustmentEntry(command  )}</u> в следующем обновлении</b>
 
 #MLBB #MobileLegends #Mobile_Legends #MLBB_Other`, {parse_mode: 'HTML'});
 }

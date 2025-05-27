@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
 import { translateHero } from '../shared/helpers/translate-hero';
-import { getWallpaper } from '../shared/helpers/get-wallpaper';
+import { getWallpaper } from '../shared/helpers/supabase-storage';
 
 const wallpaperCommand = () => async (
   context: Context

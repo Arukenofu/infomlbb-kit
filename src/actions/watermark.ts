@@ -2,25 +2,15 @@ import { BlendMode, Jimp } from 'jimp';
 import { Images } from '../shared/enums/images';
 import { JimpReadType } from '../shared/types/jimp-types';
 
-interface CreateOverlayParameters {
-  width?: number;
-  opacity?: number;
-}
-
-async function createOverlay(photoLink: string | JimpReadType, params: CreateOverlayParameters = {}) {
+async function createOverlay(photoLink: string | JimpReadType) {
   const [image, overlay] = await Promise.all([
     typeof photoLink === "string" ? Jimp.read(photoLink) : photoLink,
     Jimp.read(Images.Overlay)
   ]);
 
-  const {
-    width = 1250,
-    opacity = 0.09
-  } = params;
-
-  overlay.opacity(opacity);
+  overlay.opacity(0.09);
   overlay.resize({
-    w: width
+    w: 1250
   });
 
   image.composite(overlay, 0, 0, {

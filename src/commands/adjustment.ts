@@ -56,7 +56,7 @@ const adjustmentCommand = () => async (
 
   overlay.opacity(.09);
   overlay.resize({
-    w: 1250
+    w: Math.max(image.bitmap.width, 1250)
   });
 
   image.composite(overlay, 0, 0, {
