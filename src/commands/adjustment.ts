@@ -1,12 +1,13 @@
-import { Context } from 'telegraf';
 import { Jimp } from 'jimp';
+import { Context } from 'telegraf';
+import { Images } from '../shared/enums/images';
+import { cropImage } from '../shared/helpers/crop-image';
+import { createOverlay, createWatermark } from '../actions/watermark';
 import {
   getAdjustmentLinkByPayload,
   getAdjustmentParameters,
   sendFormattedHeroAdjustmentText
 } from '../actions/hero-adjustment';
-import { Images } from '../shared/enums/images';
-import { cropImage } from '../shared/helpers/crop-image';
 
 const adjustmentCommand = () => async (
   context: Context,
@@ -54,26 +55,11 @@ const adjustmentCommand = () => async (
 
   image.composite(adjustment, adjustmentX, adjustmentY);
 
-  overlay.opacity(.09);
-  overlay.resize({
-    w: Math.max(image.bitmap.width, 1250)
-  });
-
-  image.composite(overlay, 0, 0, {
-    opacityDest: 1,
-    opacitySource: 1
-  });
-
-  watermark.resize({
-    w: image.bitmap.width * 0.42
-  });
-
-  const watermarkX = (image.bitmap.width - watermark.bitmap.width) / 2;
-  const watermarkY = image.bitmap.height * 0.65 - watermark.bitmap.height / 2;
-
-  image.composite(watermark, watermarkX, watermarkY, {
-    opacityDest: 1,
-    opacitySource: 1
+  await createOverlay(image, overlay);
+  await createWatermark(image, {
+    width: image.bitmap.width * .42,
+    watermarkInstance: watermark,
+    opacity: 1,
   });
 
   const output = await image.getBuffer('image/png');

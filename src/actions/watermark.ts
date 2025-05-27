@@ -1,42 +1,68 @@
 import { BlendMode, Jimp } from 'jimp';
 import { Images } from '../shared/enums/images';
 import { JimpReadType } from '../shared/types/jimp-types';
+import { Alignments } from '../shared/enums/Alignments';
+import { calculateElementsPosition } from '../shared/helpers/calculateElementsPosition';
 
-async function createOverlay(photoLink: string | JimpReadType) {
+async function createOverlay(
+  photoLink: string | JimpReadType,
+  overlayInstance?: JimpReadType
+) {
   const [image, overlay] = await Promise.all([
     typeof photoLink === "string" ? Jimp.read(photoLink) : photoLink,
-    Jimp.read(Images.Overlay)
+    overlayInstance || Jimp.read(Images.Overlay)
   ]);
 
-  overlay.opacity(0.09);
+  overlay.opacity(.09);
   overlay.resize({
-    w: 1250
+    w: Math.max(image.bitmap.width, 1250)
   });
 
   image.composite(overlay, 0, 0, {
     opacityDest: 1,
-    opacitySource: 1
+    opacitySource: 1,
   });
 
   return image;
 }
 
-async function createWatermark(photoLink: string | JimpReadType) {
+interface CreateWatermarkOptions {
+  watermarkInstance?: JimpReadType;
+
+  width?: number;
+  opacity?: number;
+  blendMode?: BlendMode;
+
+  xAlign?: Alignments | number;
+  yAlign?: Alignments | number;
+}
+
+async function createWatermark(
+  photoLink: string | JimpReadType,
+  options: CreateWatermarkOptions = {}
+) {
   const [image, watermark] = await Promise.all([
     typeof photoLink === "string" ? Jimp.read(photoLink) : photoLink,
-    Jimp.read(Images.Watermark)
+    options.watermarkInstance || Jimp.read(Images.Watermark)
   ]);
 
-  watermark.resize({
-    w: image.bitmap.width * 0.8
-  });
-  watermark.opacity(.35);
+  const {
+    width = image.bitmap.width * 0.8,
+    opacity = .35,
+    xAlign = Alignments.Center,
+    yAlign = .65,
+    blendMode
+  } = options;
 
-  const x = (image.bitmap.width - watermark.bitmap.width) / 2;
-  const y = image.bitmap.height * 0.75 - watermark.bitmap.height / 2;
+  watermark.resize({
+    w: width
+  });
+  watermark.opacity(opacity);
+
+  const {x, y} = calculateElementsPosition(image, watermark, xAlign, yAlign);
 
   image.composite(watermark, x, y, {
-    mode: BlendMode.OVERLAY,
+    mode: blendMode,
     opacityDest: 1,
     opacitySource: 1
   });
@@ -44,4 +70,4 @@ async function createWatermark(photoLink: string | JimpReadType) {
   return image;
 }
 
-export {createOverlay, createWatermark}
+export {createOverlay, createWatermark, CreateWatermarkOptions};

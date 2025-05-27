@@ -1,3 +1,15 @@
+// setting environment variables type
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production';
+      BOT_TOKEN: string;
+      SUPABASE_URL: string;
+    }
+  }
+}
+
+// setting custom String methods
 declare global {
   interface String {
     toCapitalize(): string;

@@ -19,7 +19,7 @@ async function getValidImageUrl(baseUrl: string) {
 }
 
 function supabaseStorageUrl(url: string) {
-  return new URL(url, process.env.SUPABASE_URL || '').toString();
+  return new URL(url, process.env.SUPABASE_URL).toString();
 }
 
 async function getWallpaper(hero: string | null) {
