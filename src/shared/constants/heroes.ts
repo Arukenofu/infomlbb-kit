@@ -1,7 +1,6 @@
 interface Hero {
   ru: string;
   en: string;
-  icon?: string;
 }
 
 const MLBB_HEROES: Record<string, Hero> = {

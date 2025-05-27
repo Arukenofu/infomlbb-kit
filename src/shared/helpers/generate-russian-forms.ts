@@ -25,7 +25,7 @@ function generateForms(name: string) {
 }
 
 function findHero(inputName: string) {
-  const input = inputName.trim().toLowerCase();
+  const input = inputName.trim().toLowerCase().replace(' ', '-');
 
   for (const id in MLBB_HEROES) {
     const forms = generateForms(MLBB_HEROES[id].ru);
