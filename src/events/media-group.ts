@@ -9,6 +9,8 @@ const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {
   const mediaGroup = context.update.media_group;
   const caption = mediaGroup[0].caption || '';
 
+  await context.sendMessage('Создание изображении...');
+
   const output: InputMediaDocument[] = [];
 
   async function processImage(link: string) {
@@ -20,9 +22,8 @@ const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {
       return createWatermark(link).then(img => img.getBuffer('image/png'));
     }
 
-    const overlayed = await createOverlay(link);
-    const watermarked = await createWatermark(overlayed);
-    return watermarked.getBuffer('image/png');
+    const image = await createWatermark(await createOverlay(link));
+    return image.getBuffer('image/png');
   }
 
   for (const item of mediaGroup) {
