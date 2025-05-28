@@ -1,5 +1,5 @@
 import { JimpReadType } from '../types/jimp-types';
-import { Alignments } from '../enums/Alignments';
+import { Alignments, XAlignments, YAlignments } from '../enums/Alignments';
 
 function calculateCoordinates(
   align: Alignments | number,
@@ -11,13 +11,14 @@ function calculateCoordinates(
   }
 
   switch (align) {
-    case Alignments.Left:
-    case Alignments.Top:
+    case XAlignments.Left:
+    case YAlignments.Top:
       return 0;
-    case Alignments.Center:
+    case XAlignments.Center:
+    case YAlignments.Center:
       return (parentSize - childSize) / 2;
-    case Alignments.Right:
-    case Alignments.Bottom:
+    case XAlignments.Right:
+    case YAlignments.Bottom:
       return parentSize - childSize;
     default:
       return (parentSize - childSize) / 2;

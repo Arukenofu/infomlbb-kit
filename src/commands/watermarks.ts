@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
 import { getPhotolink } from '../shared/helpers/get-photolink';
-import { createOverlay, createWatermark } from '../actions/watermark';
+import { createOverlay, createWatermark, parseAlignCommands } from '../actions/watermark';
 import { JimpReadType } from '../shared/types/jimp-types';
 import { BlendMode } from 'jimp';
 
@@ -24,8 +24,16 @@ const processImage = async (
 };
 
 const watermarkCommand = () => async (context: Context) => {
+  const aligns = await parseAlignCommands(context);
+
+  if (!aligns) {
+    return;
+  }
+
   await processImage(context, (photoLink) =>
-    createWatermark(photoLink),
+    createWatermark(photoLink, {
+      ...aligns
+    }),
   );
 };
 
@@ -36,8 +44,15 @@ const overlayCommand = () => async (context: Context) => {
 };
 
 const twatermarkCommand = () => async (context: Context) => {
+  const aligns = await parseAlignCommands(context);
+
+  if (!aligns) {
+    return;
+  }
+
   await processImage(context, async (photoLink) => createWatermark(await createOverlay(photoLink), {
-    blendMode: BlendMode.OVERLAY
+    blendMode: BlendMode.OVERLAY,
+    ...aligns
   }));
 };
 
