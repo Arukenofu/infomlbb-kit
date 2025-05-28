@@ -102,11 +102,15 @@ async function parseAlignCommands(
   if (commands.length === 1) {
     const value = commands[0];
 
+    if (isNumeric(value) && Number(value) > 100 && 0 > Number(value)) {
+      await context.sendMessage('Задан неправильный числовой параметр, выберите от 0 до 100'); return null;
+    }
+
     if (isXAlignment(value)) {
       aligns.xAlign = value;
     } else if (isYAlignment(value)) {
-      aligns.yAlign = value;
-    } else if (isNumeric(value) && Number(value) > 100 && 0 > Number(value)) {
+    aligns.yAlign = value;
+    } else if (isNumeric(value)) {
       aligns.xAlign = toNumber(value) ;
     } else {
       await context.sendMessage('Задан неправильный параметр'); return null;
