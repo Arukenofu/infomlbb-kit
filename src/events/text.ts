@@ -1,6 +1,7 @@
 import { Context } from 'telegraf';
 import { getLinksFromUrl, getWatermarkImagesFromLinks } from '../actions/link-downloader';
 import { parseAlignCommands } from '../actions/watermark';
+import { InputFile } from 'telegraf/types';
 
 const onText = () => async (
   context: Context
@@ -13,7 +14,15 @@ const onText = () => async (
   const options = await parseAlignCommands(context);
 
   const images = await getWatermarkImagesFromLinks(links, options ? options : {});
-  await context.sendMediaGroup(images);
+
+  if (images.length === 1) {
+    await context.sendDocument({
+      filename: 'photo.png',
+      source: ((images[0].media as {source: Buffer<ArrayBufferLike>}).source)
+    })
+  } else {
+    await context.sendMediaGroup(images);
+  }
 }
 
 export {onText}

@@ -33,6 +33,8 @@ async function getLinksFromUrl(context: Context) {
     if (images.length === 0) {
       await context.sendMessage(`В посте нет фото, только видео`); return;
     }
+
+    return images;
   }
 
   if (text.startsWith('https://www.instagram.com')) {
