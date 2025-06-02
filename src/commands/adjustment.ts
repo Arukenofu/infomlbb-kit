@@ -78,7 +78,7 @@ enum ErrorMessages {
 
 
   NO_IMAGE = `Прикрепите изображение к команде или укажите третьим параметром правильное имя героя:
-<code>/adjustment [нерф | бафф] [имя_героя если без изображения]</code>`
+<code>/adjustment [нерф | бафф] [имя-героя если без изображения]</code>`
 }
 
 export { adjustmentCommand }
