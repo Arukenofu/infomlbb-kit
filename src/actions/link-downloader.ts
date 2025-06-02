@@ -1,6 +1,5 @@
 import { Context } from 'telegraf';
-import { InputMediaDocument } from 'telegraf/src/core/types/typegram';
-import { createOverlay, createWatermark, CreateWatermarkOptions } from './watermark';
+import { createOverlay, createWatermark, CreateWatermarkOptions, parseAlignCommands } from './watermark';
 import { InstagramResponse } from 'instagram-url-direct';
 
 async function getLinksFromUrl(context: Context) {
@@ -41,9 +40,9 @@ async function getLinksFromUrl(context: Context) {
     const {instagramGetUrl: download} = await import('instagram-url-direct');
     const url = text.split(' ')[0];
 
-    const data = await download(url).catch(async () => {
+    const data = await download(url).catch(async (e) => {
       await context.sendMessage(`Неизвестная ошибка`);
-      throw new Error();
+      throw new Error(e);
     }) as InstagramResponse;
 
     if (data.url_list.length === 0) {
@@ -62,15 +61,51 @@ async function getLinksFromUrl(context: Context) {
   }
 }
 
+interface Images {
+  type: 'document';
+  media: {
+      source: Buffer<ArrayBufferLike>;
+      filename: string;
+  }
+}
+
+interface Options extends CreateWatermarkOptions {
+  applyWatermark?: boolean;
+}
+
+async function parseLinkDownloaderOptions(
+  context: Context
+) {
+  const applyWatermark = !context.text?.includes('--no');
+
+  let aligns: Options | undefined = {};
+
+  if (applyWatermark) {
+    aligns = await parseAlignCommands(context);
+  }
+
+  return aligns;
+}
+
 async function getWatermarkImagesFromLinks(
   links: string[],
-  watermarkOptions: CreateWatermarkOptions = {}
+  watermarkOptions: Options = {}
 ) {
-  const output: InputMediaDocument[] = [];
+  const output: Images[] = [];
 
-  for (const item of links) {
-    const image = await createWatermark(await createOverlay(item), watermarkOptions);
-    const buffer = await image.getBuffer('image/png');
+  const processLink = async (link: string) => {
+    if (watermarkOptions.applyWatermark) {
+      const overlay = await createOverlay(link);
+      const image = await createWatermark(overlay, watermarkOptions);
+      return await image.getBuffer('image/png');
+    } else {
+      const response = await fetch(link);
+      return Buffer.from(await response.arrayBuffer());
+    }
+  };
+
+  for (const link of links) {
+    const buffer = await processLink(link);
 
     output.push({
       type: 'document',
@@ -81,4 +116,4 @@ async function getWatermarkImagesFromLinks(
   return output;
 }
 
-export { getLinksFromUrl, getWatermarkImagesFromLinks };
+export { getLinksFromUrl, parseLinkDownloaderOptions, getWatermarkImagesFromLinks };

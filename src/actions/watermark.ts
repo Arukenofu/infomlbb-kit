@@ -77,9 +77,10 @@ async function createWatermark(
 }
 
 async function parseAlignCommands(
-  context: Context
+  context: Context,
+  startFrom: number = 1
 ) {
-  const commands = context.text?.split(' ').slice(1) || [];
+  const commands = context.text?.split(' ').slice(startFrom) || [];
 
   const aligns: { xAlign?: XAlignments | number, yAlign?: YAlignments | number } = {};
 
@@ -103,7 +104,7 @@ async function parseAlignCommands(
     const value = commands[0];
 
     if (isNumeric(value) && Number(value) > 100 && 0 > Number(value)) {
-      await context.sendMessage('Задан неправильный числовой параметр, выберите от 0 до 100'); return null;
+      await context.sendMessage('Задан неправильный числовой параметр, выберите от 0 до 100'); return;
     }
 
     if (isXAlignment(value)) {
@@ -113,7 +114,7 @@ async function parseAlignCommands(
     } else if (isNumeric(value)) {
       aligns.xAlign = toNumber(value) ;
     } else {
-      await context.sendMessage('Задан неправильный параметр'); return null;
+      await context.sendMessage('Задан неправильный параметр'); return;
     }
   }
 
@@ -125,7 +126,7 @@ async function parseAlignCommands(
     } else if (isNumeric(xVal)) {
       aligns.xAlign = toNumber(xVal);
     } else {
-      await context.sendMessage('Неверный параметр для X-выравнивания'); return null;
+      await context.sendMessage('Неверный параметр для X-выравнивания'); return;
     }
 
     if (isYAlignment(yVal)) {
@@ -133,7 +134,7 @@ async function parseAlignCommands(
     } else if (isNumeric(yVal)) {
       aligns.yAlign = toNumber(yVal);
     } else {
-      await context.sendMessage('Неверный параметр для Y-выравнивания'); return null;
+      await context.sendMessage('Неверный параметр для Y-выравнивания'); return;
     }
   }
 
