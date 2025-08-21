@@ -131,7 +131,8 @@ const MLBB_HEROES: Record<string, Hero> = {
   125: { ru: "Чжусинь", en: "Zhuxin" },
   126: { ru: "Су-Ё", en: "Suyou" },
   127: { ru: "Лукас", en: "Lukas" },
-  128: { ru: "Калея", en: "Kalea" }
+  128: { ru: "Калея", en: "Kalea" },
+  129: { ru: 'У-Цзэтянь', en: "Zetian"}
 };
 
 export {MLBB_HEROES}
