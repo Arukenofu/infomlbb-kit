@@ -4,7 +4,18 @@ import {
   watermarkCommand,
   twatermarkCommand,
   adjustmentCommand,
+  translateCommand,
 } from '../commands';
+
+type CommandHandler = (ctx: any) => Promise<void>;
+
+const commands: Record<string, CommandHandler> = {
+  '/overlay': overlayCommand(),
+  '/watermark': watermarkCommand(),
+  '/twatermark': twatermarkCommand(),
+  '/adjustment': adjustmentCommand(),
+  '/patch': translateCommand(),
+};
 
 const onPhoto = () => async (
   context: Context
@@ -15,14 +26,15 @@ const onPhoto = () => async (
 
   const caption = context.message.caption || ''
 
-  if (caption.startsWith('/overlay')) {
-    await overlayCommand()(context);
-  } else if (caption.startsWith('/watermark')) {
-    await watermarkCommand()(context);
-  } else if (caption.startsWith('/twatermark') || caption === '') {
+  const matched = Object.entries(commands).find(([key]) =>
+    caption.startsWith(key)
+  );
+
+  if (matched) {
+    const [, handler] = matched;
+    await handler(context);
+  } else if (caption === '') {
     await twatermarkCommand()(context);
-  } else if (caption.startsWith('/adjustment')) {
-    await adjustmentCommand()(context);
   }
 }
 

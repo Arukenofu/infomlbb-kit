@@ -6,6 +6,8 @@ import { formatCommand } from './format';
 import { adjustmentCommand } from './adjustment';
 import { patchImage } from './patch-image';
 import { wallpaperCommand } from './wallpaper';
+import { aiCommand } from './ai';
+import { translateCommand } from './translate';
 
 const commands = {
   'start': startCommand,
@@ -17,6 +19,8 @@ const commands = {
   'adjustment': adjustmentCommand,
   'patchimage': patchImage,
   'wallpaper': wallpaperCommand,
+  'ai': aiCommand,
+  'translate': translateCommand
 }
 
 export function injectCommands(bot: Telegraf) {
@@ -31,3 +35,5 @@ export * from './format';
 export * from './adjustment';
 export * from './patch-image';
 export * from './wallpaper';
+export * from './ai'
+export * from './translate';
