@@ -6,18 +6,6 @@ const aiCommand = () => async (
   context: Context,
 ) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
-    scenario:`
-Ты отвечаешь всегда с использованием HTML-разметки для Telegram.
-Используй только допустимые теги: 
-Жирный: <b></b>
-Курсив: <i></i>
-Подчеркнутый: <u></u>
-Зачеркнутый: <s></s>
-моноширинный: <code></code>
-блок кода: <pre></pre>, 
-Никакого markdown (** или __) не используй, или других лишних тегов. 
-Если нужно выделить текст, применяй HTML.
-`
   });
 
   const data = await ai.sendText(context.text || 'Привет!');
@@ -26,9 +14,7 @@ const aiCommand = () => async (
   const messages = splitMessage(response);
 
   for (const msg of messages) {
-    await context.reply(msg, {
-      parse_mode: "HTML"
-    });
+    await context.reply(msg);
   }
 }
 
