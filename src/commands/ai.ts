@@ -6,6 +6,7 @@ const aiCommand = () => async (
   context: Context,
 ) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
+    scenario: 'Отвечай без никакого форматирования'
   });
 
   const data = await ai.sendText(context.text || 'Привет!');
