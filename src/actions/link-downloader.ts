@@ -1,9 +1,11 @@
 import { Context } from 'telegraf';
 import { createOverlay, createWatermark, CreateWatermarkOptions, parseAlignCommands } from './watermark';
 import { InstagramResponse } from 'instagram-url-direct';
+import { parseInput } from '../shared/helpers/parse-input';
 
 async function getLinksFromUrl(context: Context) {
-  const text = context.text! || '';
+  const {args} = parseInput(context.text || '');
+  const text = args.join(' ');
 
   if (
     text.startsWith('https://twitter.com') ||
@@ -74,14 +76,16 @@ interface Options extends CreateWatermarkOptions {
 }
 
 async function parseLinkDownloaderOptions(
-  context: Context
+  context: Context,
+  parameters: string[],
 ) {
-  const applyWatermark = !context.text?.includes('--no');
+  const applyWatermark = !parameters.includes('--no');
 
   let aligns: Options | undefined = {};
 
   if (applyWatermark) {
     aligns = await parseAlignCommands(context);
+    aligns!.applyWatermark = applyWatermark;
   }
 
   return aligns;

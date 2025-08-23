@@ -6,8 +6,8 @@ import { onMediaGroup } from './media-group';
 import { onText } from './text';
 
 export function injectEvents(bot: Telegraf) {
-  bot.on(message('photo'), onPhoto());
   bot.on(photo_media_group(), onMediaGroup());
+  bot.on(message('photo'), onPhoto());
   bot.on(message('text'), onText());
 }
 

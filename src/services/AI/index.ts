@@ -66,6 +66,10 @@ export class AIService {
     );
   }
 
+  readResponse(response: AIResponse) {
+    return response.candidates[0].content.parts[0].text;
+  }
+
   /** Отправить только текст */
   async sendText(text: string) {
     return this.makeRequest(this.buildUserContext([], text));

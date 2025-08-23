@@ -19,7 +19,7 @@ const aiCommand = () => async (
     const data = await ai.sendImage(base64, context.text || '');
     responseText = data.candidates[0].content.parts[0].text;
   } else {
-    const data = await ai.sendText(context.text || 'Привет!');
+    const data = await ai.sendText(context.text || '');
     responseText = data.candidates[0].content.parts[0].text;
   }
 

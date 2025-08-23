@@ -1,5 +1,6 @@
 import { Context } from 'telegraf';
 import { getLinksFromUrl, getWatermarkImagesFromLinks, parseLinkDownloaderOptions } from '../actions/link-downloader';
+import { parseInput } from '../shared/helpers/parse-input';
 
 const onText = () => async (
   context: Context
@@ -9,7 +10,9 @@ const onText = () => async (
   const links = await getLinksFromUrl(context);
   if (!links) return;
 
-  const options = await parseLinkDownloaderOptions(context);
+  const {parameters} = parseInput(context.text || '');
+
+  const options = await parseLinkDownloaderOptions(context, parameters);
   const images = await getWatermarkImagesFromLinks(links, options);
 
   if (images.length === 1) {

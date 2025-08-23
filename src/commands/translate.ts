@@ -4,7 +4,7 @@ import { AIService } from '../services/AI';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { splitAndSendMessage } from '../shared/helpers/split-message';
 
-const scenario = `
+export const translateScenario = `
 Ты получаешь скриншот с текстом патч-нотов.
 Твоя задача — перевести текст на русский язык и оформить его строго по формату:
 
@@ -22,11 +22,11 @@ const scenario = `
   - Оставляй только суть изменения.
 - Если изменение описывает отмену прошлых правок, пиши в стиле:
   "Отменено снижение бонуса щита..."
-- Перед уникальными пассивными 'n: ' (без ')
+- Перед уникальными пассивными 'b: ' (без ')
 - Если уникальных пассивок несколько, то нумеруй типо: 
-  Уникальная пассивная 1 - Изменение
+  b: Уникальная пассивная 1 - Изменение
   // что-то
-  Уникальная пассивная 2 - Усиление
+  b: Уникальная пассивная 2 - Усиление
   // что-то
 
 Пример правильного результата:
@@ -55,7 +55,7 @@ const translateCommand = () => async (
   if (!context.message || !('photo' in context.message)) return;
 
   const link = await getPhotolink(context.message.photo, context.telegram);
-  const ai = new AIService(process.env.AI_SERVICE_KEY, { scenario });
+  const ai = new AIService(process.env.AI_SERVICE_KEY, { scenario: translateScenario });
 
   const base64 = await fetchImageAsBase64(link, 'image/jpeg');
 
