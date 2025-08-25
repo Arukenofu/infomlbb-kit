@@ -8,10 +8,10 @@ import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermar
 const onText = () => async (
   context: Context
 ) => {
-  await context.sendMessage('Создание медиа...');
-
   const links = await getLinksFromUrl(context.text || '');
   if (!links || has(links, 'error')) return;
+
+  await context.sendMessage('Создание медиа...');
 
   const {args, parameters} = parseInput(context.text || '');
 
