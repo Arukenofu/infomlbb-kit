@@ -18,7 +18,9 @@ async function getLinksFromUrl(text: string) {
       .filter((v) => v.type === 'photo' && v.image)
       .map((v) => v.image!);
 
-    return images.length ? images : { error: 'В посте нет фото, только видео' };
+    return images.length
+      ? { images, description: data.result.description }
+      : { error: 'В посте нет фото, только видео' };
   }
 
   if (text.startsWith('https://www.instagram.com')) {
@@ -36,7 +38,9 @@ async function getLinksFromUrl(text: string) {
       .filter((v) => v.type === 'image' && v.url)
       .map((v) => v.url!);
 
-    return images.length ? images : { error: 'В посте нет фото, только видео' };
+    return images.length
+      ? { images, description: data.post_info.caption }
+      : { error: 'В посте нет фото, только видео' };
   }
 
   return { error: 'Неподдерживаемая ссылка' };

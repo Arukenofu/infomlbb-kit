@@ -4,10 +4,10 @@ import { PhotoMediaGroupContext } from '@dietime/telegraf-media-group';
 import { getMultiplePhotoLinks, } from '../processes/get-photolink';
 import { AIService } from '../services/AI';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
-import { translateScenario } from '../commands';
 import { parseInput } from '../shared/helpers/parse-input';
 import { createOverlay } from '../actions/watermark/createOverlay';
 import { createWatermark } from '../actions/watermark/createTWatermark';
+import patchTranslator from '../services/AI/prompts/patch-translator';
 
 type ImageProcessor = (link: string) => Promise<Buffer>;
 
@@ -33,7 +33,7 @@ const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {
   const { command, args } = parseInput(caption);
 
   if (command === '/patch') {
-    const ai = new AIService(process.env.AI_SERVICE_KEY, {scenario: translateScenario});
+    const ai = new AIService(process.env.AI_SERVICE_KEY, {scenario: patchTranslator});
     const base64images = await Promise.all(links.map((v) => fetchImageAsBase64(v, 'image/jpeg')));
     const data = await ai.sendImages(base64images, args.join(' '));
     const response = ai.readResponse(data);
