@@ -1,12 +1,13 @@
 import { Context } from 'telegraf';
 import { InputMediaDocument} from 'telegraf/src/core/types/typegram';
 import { PhotoMediaGroupContext } from '@dietime/telegraf-media-group';
-import { getMultiplePhotoLinks, } from '../shared/helpers/get-photolink';
-import { createOverlay, createWatermark } from '../actions/watermark';
+import { getMultiplePhotoLinks, } from '../processes/get-photolink';
 import { AIService } from '../services/AI';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { translateScenario } from '../commands';
 import { parseInput } from '../shared/helpers/parse-input';
+import { createOverlay } from '../actions/watermark/createOverlay';
+import { createWatermark } from '../actions/watermark/createTWatermark';
 
 type ImageProcessor = (link: string) => Promise<Buffer>;
 

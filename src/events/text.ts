@@ -1,18 +1,21 @@
 import { Context } from 'telegraf';
-import { getLinksFromUrl, getWatermarkImagesFromLinks, parseLinkDownloaderOptions } from '../actions/link-downloader';
 import { parseInput } from '../shared/helpers/parse-input';
+import { getLinksFromUrl } from '../actions/link-downloader/get-source-links';
+import { has } from '../shared/helpers/object-has';
+import { parseLinkDownloaderOptions } from '../actions/link-downloader/get-options';
+import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermark';
 
 const onText = () => async (
   context: Context
 ) => {
   await context.sendMessage('Создание медиа...');
 
-  const links = await getLinksFromUrl(context);
-  if (!links) return;
+  const links = await getLinksFromUrl(context.text || '');
+  if (!links || has(links, 'error')) return;
 
-  const {parameters} = parseInput(context.text || '');
+  const {args, parameters} = parseInput(context.text || '');
 
-  const options = await parseLinkDownloaderOptions(context, parameters);
+  const options = await parseLinkDownloaderOptions(args.slice(1, 1), parameters);
   const images = await getWatermarkImagesFromLinks(links, options);
 
   if (images.length === 1) {

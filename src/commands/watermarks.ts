@@ -1,8 +1,12 @@
 import { Context } from 'telegraf';
-import { getPhotolink } from '../shared/helpers/get-photolink';
-import { createOverlay, createWatermark, parseAlignCommands } from '../actions/watermark';
+import { getPhotolink } from '../processes/get-photolink';
+import { parseAlignCommands } from '../actions/watermark/align';
 import { JimpReadType } from '../shared/types/jimp-types';
 import { BlendMode } from 'jimp';
+import {createOverlay} from "../actions/watermark/createOverlay";
+import { createWatermark } from '../actions/watermark/createTWatermark';
+import { parseInput } from '../shared/helpers/parse-input';
+import { has } from '../shared/helpers/object-has';
 
 const processImage = async (
   context: Context,
@@ -24,9 +28,11 @@ const processImage = async (
 };
 
 const watermarkCommand = () => async (context: Context) => {
-  const aligns = await parseAlignCommands(context);
+  const {args} = parseInput(context.text || '');
 
-  if (!aligns) {
+  const aligns = await parseAlignCommands(args);
+
+  if (has(aligns, 'error')) {
     return;
   }
 
@@ -44,7 +50,9 @@ const overlayCommand = () => async (context: Context) => {
 };
 
 const twatermarkCommand = () => async (context: Context) => {
-  const aligns = await parseAlignCommands(context);
+  const {args} = parseInput(context.text || '');
+
+  const aligns = await parseAlignCommands(args);
 
   if (!aligns) {
     return;

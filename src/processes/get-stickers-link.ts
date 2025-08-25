@@ -11,3 +11,5 @@ async function getStickersLink(telegram: Telegram, stickers: string[]) {
 }
 
 export { getStickersLink };
+
+

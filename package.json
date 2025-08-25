@@ -7,11 +7,11 @@
   "homepage": "https://github.com/sollidy/telegram-bot-vercel-boilerplate",
   "scripts": {
     "dev": "dotenv -- nodemon -e ts -x ts-node src/index.ts",
+    "type-check": "tsc --noEmit src/index.ts",
     "test": "nodemon -e ts -x ts-node src/actions/html-to-image/index.ts",
     "devWindows": "@powershell -Command $env:DEBUG='bot*';dotenv -- -- nodemon -e ts -x ts-node src/index.ts",
     "build": "ncc build src/index.ts -o public -m",
-    "prettier": "prettier --write 'src/**/*.ts'",
-    "lint": "tsc --noemit"
+    "prettier": "prettier --write 'src/**/*.ts'"
   },
   "dependencies": {
     "@dietime/telegraf-media-group": "^1.0.5",

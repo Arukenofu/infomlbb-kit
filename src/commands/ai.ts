@@ -1,7 +1,7 @@
 import { Context } from 'telegraf';
 import { AIService } from '../services/AI';
-import { splitMessage } from '../shared/helpers/split-message';
-import { getPhotolink } from '../shared/helpers/get-photolink';
+import { splitMessage } from '../processes/split-message';
+import { getPhotolink } from '../processes/get-photolink';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 
 const aiCommand = () => async (

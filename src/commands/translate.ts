@@ -1,8 +1,8 @@
 import { Context } from 'telegraf';
-import { getPhotolink } from '../shared/helpers/get-photolink';
+import { getPhotolink } from '../processes/get-photolink';
 import { AIService } from '../services/AI';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
-import { splitAndSendMessage } from '../shared/helpers/split-message';
+import { splitAndSendMessage } from '../processes/split-message';
 
 export const translateScenario = `
 Ты получаешь скриншот с текстом патч-нотов.
