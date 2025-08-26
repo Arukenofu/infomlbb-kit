@@ -7,6 +7,17 @@ import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermar
 import { AIService } from '../services/AI';
 import postCreator from '../services/AI/prompts/post-creator';
 
+export const handlePost = async (context: Context, description: string) => {
+  const ai = new AIService(process.env.AI_SERVICE_KEY, {
+    scenario: postCreator,
+  });
+
+  const data = await ai.sendText(description);
+  const response = ai.readResponse(data);
+
+  await context.sendMessage(response, { parse_mode: 'HTML' });
+};
+
 const onText = () => async (
   context: Context
 ) => {
@@ -17,18 +28,12 @@ const onText = () => async (
 
   await context.sendMessage('Создание медиа...');
 
-  if (description) {
-    const ai = new AIService(process.env.AI_SERVICE_KEY, {
-      scenario: postCreator
-    });
-
-    ai.sendText(description || 'Нет контента, а значит можешь написать <b>[ПУСТО]</b>').then((v) => {
-      context && context.sendMessage(ai.readResponse(v), {parse_mode: 'HTML'});
-    })
-  }
-
   const options = await parseLinkDownloaderOptions(args.slice(1), parameters);
   const medias = await getWatermarkImagesFromLinks(images, options);
+
+  if (description) {
+    handlePost(context, description);
+  }
 
   if (medias.length === 1) {
     await context.sendDocument({
