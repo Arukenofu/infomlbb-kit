@@ -59,9 +59,14 @@ const patchImage = () => async (
   const stickers = await getStickersLink(context.telegram, stickersLink);
   const html = replaceEmojisWithStickers(formattedHtml, stickers);
 
-  const screenshot = await htmlToImage(html);
+  const screenshots = await htmlToImage(html);
 
-  await context.sendDocument({source: Buffer.from(new Uint8Array(screenshot)), filename: 'patch.png'});
+  if (!screenshots.length) return;
+
+  await context.sendMediaGroup(screenshots.map((screenshot) => ({
+    type: 'document',
+    media: {source: screenshot, filename: 'patch.png'}
+  })))
 }
 
 export {patchImage}
