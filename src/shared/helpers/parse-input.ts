@@ -16,7 +16,7 @@ export function parseInput(input: string): ParsedCommand {
       command = part;
     } else if (part.startsWith("--")) {
       params.push(part);
-    } else {
+    } else if (part) {
       args.push(part);
     }
   }
