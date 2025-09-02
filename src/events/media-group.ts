@@ -8,20 +8,26 @@ import { parseInput } from '../shared/helpers/parse-input';
 import { createOverlay } from '../actions/watermark/createOverlay';
 import { createWatermark } from '../actions/watermark/createTWatermark';
 import patchTranslator from '../services/AI/prompts/patch-translator';
+import { IAlignments, parseAlignCommands } from '../actions/watermark/align';
+import { has } from '../shared/helpers/object-has';
 
-type ImageProcessor = (link: string) => Promise<Buffer>;
+type ImageProcessor = (link: string, aligns?: IAlignments) => Promise<Buffer>;
+
+const defaultProcessor: ImageProcessor = async (link, aligns) => {
+  const image = await createWatermark(await createOverlay(link), {
+    ...aligns
+  });
+  return image.getBuffer('image/png');
+};
 
 const processors: Record<string, ImageProcessor> = {
   '/overlay': async (link) =>
     createOverlay(link).then(img => img.getBuffer('image/png')),
 
-  '/watermark': async (link) =>
-    createWatermark(link).then(img => img.getBuffer('image/png')),
-};
+  '/watermark': async (link, aligns) =>
+    createWatermark(link, aligns).then(img => img.getBuffer('image/png')),
 
-const defaultProcessor: ImageProcessor = async (link) => {
-  const image = await createWatermark(await createOverlay(link));
-  return image.getBuffer('image/png');
+  '/twatermark': defaultProcessor
 };
 
 const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {
@@ -46,10 +52,14 @@ const onMediaGroup = () => async (context: PhotoMediaGroupContext<Context>) => {
   await context.sendMessage('Создание изображении...');
 
   const output: InputMediaDocument[] = [];
-  const processor = processors[command ?? ''] ?? defaultProcessor
+  const processor = processors[command ?? ''] ?? defaultProcessor;
+
+  const aligns = await parseAlignCommands(args);
+
+  if (has(aligns, 'error')) return;
 
   for (const link of links) {
-    const buffer = await processor(link);
+    const buffer = await processor(link, aligns);
 
     output.push({
       type: 'document',
