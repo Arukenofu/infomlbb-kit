@@ -1,6 +1,5 @@
 import { Context } from 'telegraf';
 import { getStickersLink } from '../processes/get-stickers-link';
-import { htmlToImage } from '../actions/html-to-image';
 import { replaceEmojisWithStickers } from '../actions/format-patchnotes/replace-emoji';
 import {
   createElementNode,
@@ -58,15 +57,6 @@ const patchImage = () => async (
     .map(entry => entry.custom_emoji_id);
   const stickers = await getStickersLink(context.telegram, stickersLink);
   const html = replaceEmojisWithStickers(formattedHtml, stickers);
-
-  const screenshots = await htmlToImage(html);
-
-  if (!screenshots.length) return;
-
-  await context.sendMediaGroup(screenshots.map((screenshot) => ({
-    type: 'document',
-    media: {source: screenshot, filename: 'patch.png'}
-  })))
 }
 
 export {patchImage}
