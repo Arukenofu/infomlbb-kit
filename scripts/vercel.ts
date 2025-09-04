@@ -1,8 +1,6 @@
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 import archiver from 'archiver';
-import { resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 function splitIntoSections(html: string, maxSections: number = 30): string[][] {
@@ -43,9 +41,6 @@ async function htmlToImage(htmlContent: string) {
   const browser = await createBrowser();
   const page = await browser.newPage();
 
-  const cssPath = resolve(__dirname, 'assets/styles.css');
-  const cssContent = readFileSync(cssPath, 'utf8');
-
   const sections = splitIntoSections(htmlContent, 30);
   const screenshots: Buffer[] = [];
 
@@ -53,7 +48,7 @@ async function htmlToImage(htmlContent: string) {
     const finalHtml = `
     <html lang="ru">
       <head>
-        <style>${cssContent}</style>
+        <link rel="stylesheet" href="https://hdknnncxvrdqnyijnprx.supabase.co/storage/v1/object/public/assets/styles.css">
       </head>
       <body>
         <div class="content">
