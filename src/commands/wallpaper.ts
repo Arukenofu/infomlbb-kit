@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
 import { translateHero } from '../shared/helpers/translate-hero';
-import { getWallpaper } from '../shared/helpers/supabase-storage';
+import { Supabase } from '../services/Supabase';
 
 const wallpaperCommand = () => async (
   context: Context
@@ -21,7 +21,7 @@ const wallpaperCommand = () => async (
 
   await context.sendMessage('Поиск изображения...');
 
-  const url = await getWallpaper(hero || '');
+  const url = await Supabase.getWallpaper(hero || '');
   if (!url) {
     await context.sendMessage(ErrorMessages.IMAGE_NOT_FOUND); return;
   }

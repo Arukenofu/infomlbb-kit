@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit src/index.ts",
     "test": "nodemon -e ts -x ts-node src/actions/html-to-image/index.ts",
     "devWindows": "@powershell -Command $env:DEBUG='bot*';dotenv -- -- nodemon -e ts -x ts-node src/index.ts",
-    "build": "ncc build scripts/vercel.ts -o public -m  ",
+    "build": "ncc build scripts/vercel.ts -o public -m",
+    "build:bun": "bun build ./src/index.ts --outdir ./dist --target bun --external abort-controller --external abortsignal",
     "prettier": "prettier --write 'src/**/*.ts'"
   },
   "dependencies": {
@@ -18,7 +19,7 @@
     "@sparticuz/chromium": "^133.0.0",
     "@upstash/redis": "^1.35.3",
     "@vercel/node": "^3.2.24",
-    "adm-zip": "^0.5.16",
+    "@zip.js/zip.js": "^2.7.73",
     "archiver": "^7.0.1",
     "dotenv-cli": "^7.4.2",
     "instagram-url-direct": "^2.0.6",

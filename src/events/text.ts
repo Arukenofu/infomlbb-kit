@@ -23,7 +23,7 @@ const onText = () => async (
 ) => {
   const {args, parameters} = parseInput(context.text || '');
 
-  const { images, description } = await getLinksFromUrl(args[0]);
+  const { images, description } = await getLinksFromUrl(args[0] || '');
   if (!images || has(images, 'error')) return;
 
   await context.sendMessage('Создание медиа...');
@@ -32,7 +32,7 @@ const onText = () => async (
   const medias = await getWatermarkImagesFromLinks(images, options);
 
   if (description) {
-    handlePost(context, description);
+    await handlePost(context, description);
   }
 
   if (medias.length === 1) {

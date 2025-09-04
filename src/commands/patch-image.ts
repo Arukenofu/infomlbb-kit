@@ -7,8 +7,8 @@ import {
   renderPatchHTML,
 } from '../actions/format-patchnotes';
 import { findHero } from '../shared/helpers/generate-russian-forms';
-import { getHeroIcon } from '../shared/helpers/supabase-storage';
 import { Vercel } from '../services/Vercel';
+import { Supabase } from '../services/Supabase';
 
 const patchImage = () => async (
   context: Context
@@ -29,7 +29,7 @@ const patchImage = () => async (
       const heroData = findHero(hero);
       if (!heroData) return;
 
-      const icon = getHeroIcon(heroData.en);
+      const icon = Supabase.getHeroIcon(heroData.en);
 
       if (node.type === 'element' && node.children[0]?.type === 'element') {
         const underline = node.children[0];

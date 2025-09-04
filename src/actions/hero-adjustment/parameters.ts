@@ -1,8 +1,8 @@
 import { Telegram } from 'telegraf';
 import { getPhotolink } from '../../processes/get-photolink';
 import { translateHero } from '../../shared/helpers/translate-hero';
-import { getWallpaper } from '../../shared/helpers/supabase-storage';
 import { PhotoSize } from 'telegraf/types';
+import { Supabase } from '../../services/Supabase';
 
 interface AdjustmentParamsInput {
   photo?: PhotoSize[];
@@ -22,7 +22,7 @@ async function getAdjustmentParameters(text: string, input: AdjustmentParamsInpu
   const [adjustmentCommand, hero] = text.split(' ');
 
   const translatedHero = translateHero(hero || '', 'en');
-  const imageLink = await getWallpaper(translatedHero);
+  const imageLink = await Supabase.getWallpaper(translatedHero);
 
   return { imageLink, adjustmentCommand };
 }
