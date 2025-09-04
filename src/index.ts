@@ -17,8 +17,4 @@ injectMiddleware(bot);
 injectCommands(bot);
 injectEvents(bot);
 
-export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
-  await production(req, res, bot);
-};
-
 ENVIRONMENT !== 'production' && development(bot);
