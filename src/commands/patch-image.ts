@@ -8,6 +8,7 @@ import {
 } from '../actions/format-patchnotes';
 import { findHero } from '../shared/helpers/generate-russian-forms';
 import { getHeroIcon } from '../shared/helpers/supabase-storage';
+import { Vercel } from '../services/Vercel';
 
 const patchImage = () => async (
   context: Context
@@ -57,6 +58,17 @@ const patchImage = () => async (
     .map(entry => entry.custom_emoji_id);
   const stickers = await getStickersLink(context.telegram, stickersLink);
   const html = replaceEmojisWithStickers(formattedHtml, stickers);
+
+  const buffers = await Vercel.htmlToImage(html);
+
+  if (!buffers.length) {
+    await context.sendMessage('Не удалось получить изображения'); return;
+  }
+
+  await context.sendMediaGroup(buffers.map((screenshot) => ({
+    type: 'document',
+    media: {source: screenshot, filename: 'patch.png'}
+  })))
 }
 
 export {patchImage}
