@@ -9,7 +9,8 @@
     "outDir": "public",
     "lib": ["esnext", "dom"],
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true
   },
   "exclude": ["node_modules"]
 }

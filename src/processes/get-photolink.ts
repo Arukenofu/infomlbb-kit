@@ -1,26 +1,20 @@
-import { Context } from 'telegraf';
-import { PhotoSize } from 'telegraf/types';
-import { PhotoMediaGroupContext } from '@dietime/telegraf-media-group';
+import { PhotoSize } from 'grammy/types'
 
-async function getPhotolink(
-  photoSizes: PhotoSize[],
-  telegram: Context['telegram']
-) {
-  const photo = photoSizes[photoSizes.length - 1].file_id;
+import { telegram } from '../core';
 
-  return (await telegram.getFileLink(photo)).href;
+async function getPhotolink(photoSizes: PhotoSize[]) {
+  const photoId = photoSizes[photoSizes.length - 1].file_id;
+  const file = await telegram.getFile(photoId);
+  return `https://api.telegram.org/file/bot${telegram.token}/${file.file_path}`;
 }
 
 async function getMultiplePhotoLinks(
-  mediaGroup: PhotoMediaGroupContext<Context>['update']['media_group'],
-  telegram: Context['telegram']
+  mediaGroup: PhotoSize[][]
 ) {
   const output: string[] = [];
 
-  for (let i = 0; i < mediaGroup.length; i++) {
-    const media = mediaGroup[i];
-    const link = await getPhotolink(media.photo, telegram);
-
+  for (const media of mediaGroup) {
+    const link = await getPhotolink(media);
     output.push(link);
   }
 

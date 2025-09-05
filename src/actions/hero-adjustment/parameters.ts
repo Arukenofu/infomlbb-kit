@@ -1,19 +1,13 @@
-import { Telegram } from 'telegraf';
 import { getPhotolink } from '../../processes/get-photolink';
 import { translateHero } from '../../shared/helpers/translate-hero';
 import { PhotoSize } from 'telegraf/types';
 import { Supabase } from '../../services/Supabase';
 
-interface AdjustmentParamsInput {
-  photo?: PhotoSize[];
-  telegram?: Telegram
-}
-
-async function getAdjustmentParameters(text: string, input: AdjustmentParamsInput) {
-  if (input.photo && input.telegram) {
-    const imageLink = await getPhotolink(input.photo, input.telegram);
+async function getAdjustmentParameters(text: string, photo?: PhotoSize[]) {
+  if (photo) {
+    const imageLink = await getPhotolink(photo);
     const adjustmentCommand = String(
-      text.split(' ')[1] || '',
+      text.split(' ')[0] || '',
     ).toLowerCase();
 
     return { imageLink, adjustmentCommand };

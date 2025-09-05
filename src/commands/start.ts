@@ -1,11 +1,10 @@
-import { Context } from 'telegraf';
+import { createCommandHandler } from '../core/handlers/command.ts';
+import { dedent } from '../shared/helpers/dedent.ts';
 
-const message = 'Привет! Это бот от Баура, для автоматизации работы публикации постов с информатора' +
-  '\n\n' +
-  'Для того, чтобы получить инструкции напишите команду: /help'
-
-const startCommand = () => async (context: Context) => {
-  await context.sendMessage(message).catch();
-}
-
-export {startCommand};
+export default createCommandHandler('start', async (context) => {
+  await context.reply(dedent(`
+    Привет! Это бот от Баура, для автоматизации работы публикации постов с информатора
+    
+    Для того, чтобы получить инструкции напишите команду: /help`
+  )).catch();
+})

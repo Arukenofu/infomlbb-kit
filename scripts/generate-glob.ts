@@ -1,7 +1,30 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
-const files = readdirSync('src/commands').filter(f => f.endsWith('.ts'));
-const lines = files.map((f, i) => `import ${`a${i}`.replace('.ts', '')} from './commands/${f}';`).join('\n');
-const exportLine = `export const modules = { ${files.map((f,i) => `a${i}`.replace('.ts', '')).join(', ')} };`;
+const folders = ['commands', 'middlewares', 'events', 'filters'];
+const generatedDir = join('src', '.generated');
 
-require('fs').writeFileSync('src/modules.generated.ts', lines + '\n' + exportLine);
+if (!existsSync(generatedDir)) {
+  mkdirSync(generatedDir);
+}
+
+folders.forEach(folder => {
+  const folderPath = join('src', folder);
+  const files = readdirSync(folderPath).filter(f => f.endsWith('.ts'));
+
+  function name(str: string) {
+    return str.replace('.ts', '').replace('-', '_')
+  }
+
+  const imports = files.map((file) => {
+    const varName = name(file);
+    return `import ${varName} from '../${folder}/${file.replace('.ts', '')}';`;
+  });
+
+  const exportLine = `export const ${folder} = [ ${files.map(name).join(', ')} ];`;
+
+  const content = imports.join('\n') + '\n\n' + exportLine;
+
+  writeFileSync(join(generatedDir, `${folder}.ts`), content);
+  console.log(`src/.generated/${folder}.ts created!`);
+});

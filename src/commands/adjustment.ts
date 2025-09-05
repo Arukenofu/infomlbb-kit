@@ -1,5 +1,4 @@
 import { Jimp } from 'jimp';
-import { Context } from 'telegraf';
 import { Images } from '../shared/enums/images';
 import { cropImage } from '../shared/helpers/crop-image';
 import {
@@ -9,44 +8,47 @@ import {
 import { createOverlay } from '../actions/watermark/createOverlay';
 import { createWatermark } from '../actions/watermark/createTWatermark';
 import { getAdjustmentParameters } from '../actions/hero-adjustment/parameters';
-import { parseInput } from '../shared/helpers/parse-input';
+import { createCommandHandler } from '../core/handlers/command.ts';
+import { InputFile } from 'grammy';
+import { getText } from '../processes/get-text.ts';
+import { getPayload } from '../shared/helpers/getPayload.ts';
 
-const adjustmentCommand = () => async (context: Context) => {
-  const { args } = parseInput(context.text || '');
+export default createCommandHandler("adjustment", async (context) => {
+  const payload = getPayload(getText(context));
 
   const { imageLink, adjustmentCommand } = await getAdjustmentParameters(
-    args.join(' '), context,
+    payload, context.message?.photo
   );
 
-  const hero = args?.[1] || '';
+  const hero = payload.split(' ')?.[1] || "";
 
   if (!adjustmentCommand) {
-    await context.sendMessage(ErrorMessages.NO_ADJUSTMENT, {
-      parse_mode: 'HTML',
+    return context.reply(ErrorMessages.NO_ADJUSTMENT, {
+      parse_mode: "HTML",
     });
-    return;
   }
 
   if (!imageLink) {
-    await context.sendMessage(ErrorMessages.NO_IMAGE, { parse_mode: 'HTML' });
-    return;
+    return context.reply(ErrorMessages.NO_IMAGE, {
+      parse_mode: "HTML",
+    });
   }
 
   const adjustmentImageUrl = getAdjustmentLinkByPayload(adjustmentCommand);
 
   if (adjustmentImageUrl === null) {
-    await context.sendMessage(ErrorMessages.NO_ADJUSTMENT, {
-      parse_mode: 'HTML',
+    return context.reply(ErrorMessages.NO_ADJUSTMENT, {
+      parse_mode: "HTML",
     });
-    return;
   }
 
-  await context.sendMessage('Создание изображения...');
+  await context.reply("Создание изображения...");
 
   const adjustmentText = await getFormattedHeroAdjustmentText(
-    hero, adjustmentCommand,
+    hero,
+    adjustmentCommand
   );
-  await context.sendMessage(adjustmentText, { parse_mode: 'HTML' });
+  await context.reply(adjustmentText, { parse_mode: "HTML" });
 
   const [image, overlay, watermark, adjustment] = await Promise.all([
     Jimp.read(imageLink),
@@ -55,7 +57,7 @@ const adjustmentCommand = () => async (context: Context) => {
     Jimp.read(adjustmentImageUrl),
   ]);
 
-  cropImage(image, '3/2');
+  cropImage(image, "3/2");
 
   adjustment.resize({
     w: image.bitmap.width * 0.7,
@@ -76,8 +78,8 @@ const adjustmentCommand = () => async (context: Context) => {
 
   const output = await image.getBuffer('image/png');
 
-  await context.sendDocument({ source: output, filename: 'image.png' });
-};
+  await context.replyWithDocument(new InputFile(output, "image.png"));
+});
 
 enum ErrorMessages {
   NO_ADJUSTMENT = `Неправильно был задан параметр изменения героя, выберите из текущего списка:
@@ -91,5 +93,3 @@ enum ErrorMessages {
   NO_IMAGE = `Прикрепите изображение к команде или укажите третьим параметром правильное имя героя:
 <code>/adjustment [нерф | бафф] [имя-героя если без изображения]</code>`
 }
-
-export { adjustmentCommand }

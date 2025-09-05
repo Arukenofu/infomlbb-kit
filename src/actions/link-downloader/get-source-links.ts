@@ -1,9 +1,7 @@
-import {validateURL} from '@distube/ytdl-core';
 import {
   DownloadResult,
   instagramDownloader,
   twitterDownloader,
-  youtubeDownloader,
 } from './downloaders';
 
 async function getLinksFromUrl(text: string): Promise<DownloadResult | {error: string}> {
@@ -16,10 +14,6 @@ async function getLinksFromUrl(text: string): Promise<DownloadResult | {error: s
 
   if (text.startsWith('https://www.instagram.com')) {
     return instagramDownloader(text);
-  }
-
-  if (validateURL(text)) {
-    return youtubeDownloader(text);
   }
 
   return { error: 'Неподдерживаемая ссылка' };

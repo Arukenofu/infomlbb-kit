@@ -1,13 +1,15 @@
-import { Telegram } from 'telegraf';
+import { telegram } from "../core";
 
-async function getStickersLink(telegram: Telegram, stickers: string[]) {
+async function getStickersLink(stickers: string[]) {
   const stickersList = await telegram.getCustomEmojiStickers(stickers);
 
-  return Promise.all(
-    stickersList.map((sticker) =>
-      telegram.getFileLink(sticker.file_id).then((link) => link.href),
-    ),
-  );
+  const links = [];
+  for (const sticker of stickersList) {
+    const file = await telegram.getFile(sticker.file_id);
+    links.push(`https://api.telegram.org/file/bot${telegram.token}/${file.file_path}`);
+  }
+
+  return links;
 }
 
 export { getStickersLink };

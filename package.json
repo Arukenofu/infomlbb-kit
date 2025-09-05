@@ -6,29 +6,27 @@
   "author": "Mark Pavlov (https://github.com/sollidy)",
   "homepage": "https://github.com/sollidy/telegram-bot-vercel-boilerplate",
   "scripts": {
-    "dev": "dotenv -- nodemon -e ts -x ts-node src/index.ts",
+    "dev": "dotenv -- nodemon -e ts -x \"bun scripts/generate-glob.ts && ts-node src/index.ts\"",
     "type-check": "tsc --noEmit src/index.ts",
     "test": "nodemon -e ts -x ts-node src/actions/html-to-image/index.ts",
     "devWindows": "@powershell -Command $env:DEBUG='bot*';dotenv -- -- nodemon -e ts -x ts-node src/index.ts",
     "build": "ncc build scripts/vercel.ts -o public -m",
-    "build:bun": "bun build ./src/index.ts --outdir ./dist --target bun --external abort-controller --external abortsignal",
+    "build:bun": "bun scripts/generate-glob.ts && bun build ./src/index.ts --outdir ./dist --target bun --external abort-controller --external abortsignal --sourcemap",
     "prettier": "prettier --write 'src/**/*.ts'"
   },
   "dependencies": {
-    "@dietime/telegraf-media-group": "^1.0.5",
-    "@distube/ytdl-core": "^4.16.12",
     "@sparticuz/chromium": "^133.0.0",
-    "@upstash/redis": "^1.35.3",
     "@vercel/node": "^3.2.24",
     "@zip.js/zip.js": "^2.7.73",
     "archiver": "^7.0.1",
     "dotenv-cli": "^7.4.2",
+    "grammy": "^1.38.2",
+    "grammy-media-group": "^1.0.4",
     "instagram-url-direct": "^2.0.6",
     "jimp": "^1.6.0",
     "ofetch": "^1.4.1",
     "puppeteer": "^24.8.2",
     "puppeteer-core": "^24.8.2",
-    "telegraf": "^4.16.3",
     "twitter-downloader": "^1.1.6"
   },
   "devDependencies": {

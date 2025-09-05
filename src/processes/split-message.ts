@@ -1,4 +1,4 @@
-import { Context } from 'telegraf';
+import { Context } from 'grammy';
 
 export function splitMessage(text: string, chunkSize = 4000): string[] {
   const parts: string[] = [];
@@ -17,12 +17,10 @@ export function splitMessage(text: string, chunkSize = 4000): string[] {
   return parts;
 }
 
-export function splitAndSendMessage(text: string, context: Context) {
+export async function splitAndSendMessage(text: string, ctx: Context) {
   const messages = splitMessage(text);
 
   for (const msg of messages) {
-    context.reply(msg);
+    await ctx.reply(msg);
   }
 }
-
-

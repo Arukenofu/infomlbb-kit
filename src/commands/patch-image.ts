@@ -1,4 +1,3 @@
-import { Context } from 'telegraf';
 import { getStickersLink } from '../processes/get-stickers-link';
 import { replaceEmojisWithStickers } from '../actions/format-patchnotes/replace-emoji';
 import {
@@ -9,17 +8,21 @@ import {
 import { findHero } from '../shared/helpers/generate-russian-forms';
 import { Vercel } from '../services/Vercel';
 import { Supabase } from '../services/Supabase';
+import { createCommandHandler } from '../core/handlers/command.ts';
+import { getPayload } from '../shared/helpers/getPayload.ts';
+import { InputFile } from 'grammy';
 
-const patchImage = () => async (
-  context: Context
-) => {
-  if (!('entities' in context.message!) || !('payload' in context)) {
+export default createCommandHandler('patchimage', async (context) => {
+  const msg = context.message;
+  const payload = getPayload(msg?.text || '');
+
+  if (!msg?.entities || !payload) {
     return;
   }
 
-  await context.sendMessage('Создание изображения...');
+  await context.reply('Создание изображения...');
 
-  const tree = createPatchNodeTree(String(context.payload), {
+  const tree = createPatchNodeTree(payload, {
     onHeroHeader: ({ line, hero, node }) => {
       if (!hero) return;
 
@@ -56,19 +59,19 @@ const patchImage = () => async (
   const stickersLink = entities
     .filter(entry => entry.type === 'custom_emoji')
     .map(entry => entry.custom_emoji_id);
-  const stickers = await getStickersLink(context.telegram, stickersLink);
+  const stickers = await getStickersLink(stickersLink);
   const html = replaceEmojisWithStickers(formattedHtml, stickers);
 
   const buffers = await Vercel.htmlToImage(html);
 
   if (!buffers.length) {
-    await context.sendMessage('Не удалось получить изображения'); return;
+    return context.reply('Не удалось получить изображения');
   }
 
-  await context.sendMediaGroup(buffers.map((screenshot) => ({
-    type: 'document',
-    media: {source: screenshot, filename: 'patch.png'}
-  })))
-}
-
-export {patchImage}
+  await context.replyWithMediaGroup(
+    buffers.map((screenshot, i) => ({
+      type: 'document',
+      media: new InputFile(screenshot, `patch_${i + 1}.png`),
+    }))
+  );
+})

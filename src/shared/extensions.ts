@@ -1,3 +1,5 @@
+import 'dotenv/config.js'
+
 // setting environment variables type
 declare global {
   namespace NodeJS {

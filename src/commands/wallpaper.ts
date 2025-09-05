@@ -1,48 +1,42 @@
-import { Context } from 'telegraf';
 import { translateHero } from '../shared/helpers/translate-hero';
 import { Supabase } from '../services/Supabase';
+import { createCommandHandler } from '../core/handlers/command.ts';
+import { getPayload } from '../shared/helpers/getPayload.ts';
+import { InputFile } from 'grammy';
 
-const wallpaperCommand = () => async (
-  context: Context
-) => {
-  if (!('payload' in context)) {
-    return;
-  }
+export default createCommandHandler('wallpaper', async (context) => {
+  const payload = getPayload(context.message?.text || '');
 
-  const payload = String(context.payload) || '';
   if (!payload) {
-   await context.sendMessage(ErrorMessages.NO_PAYLOAD); return;
+    return context.reply(ErrorMessages.NO_PAYLOAD);
   }
 
   const hero = translateHero(payload, 'en');
   if (!hero) {
-    await context.sendMessage(ErrorMessages.HERO_NOT_FOUND); return;
+    return context.reply(ErrorMessages.HERO_NOT_FOUND);
   }
 
-  await context.sendMessage('Поиск изображения...');
+  await context.reply('Поиск изображения...');
 
   const url = await Supabase.getWallpaper(hero || '');
   if (!url) {
-    await context.sendMessage(ErrorMessages.IMAGE_NOT_FOUND); return;
+    return context.reply(ErrorMessages.IMAGE_NOT_FOUND);
   }
 
   const extension = url.slice(-3);
   const res = await fetch(url, { method: 'GET' });
 
   if (!res.ok) {
-    await context.sendMessage(ErrorMessages.IMAGE_NOT_FOUND); return;
+    return context.reply(ErrorMessages.IMAGE_NOT_FOUND);
   }
 
-  await context.sendDocument({
-    source: Buffer.from(await res.arrayBuffer()),
-    filename: `${payload}.${extension}`
-  });
-}
+  await context.replyWithPhoto(
+    new InputFile(Buffer.from(await res.arrayBuffer()), `${payload}.${extension}`)
+  );
+})
 
 enum ErrorMessages {
   NO_PAYLOAD = 'Укажите имя героя. Нужно указать имя героя на кириллице/латинице, используя "-" как пробел.',
   HERO_NOT_FOUND = 'Имя героя не корректно.',
   IMAGE_NOT_FOUND = 'Изображения с данным героем не найдено.'
 }
-
-export {wallpaperCommand}

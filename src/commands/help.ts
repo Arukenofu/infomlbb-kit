@@ -1,4 +1,4 @@
-import { Context } from 'telegraf';
+import { createCommandHandler } from '../core/handlers/command.ts';
 
 const message =
 `
@@ -6,10 +6,8 @@ const message =
 https://infomlbb-docs.vercel.app/
 `
 
-const helpCommand = () => async (context: Context) => {
-  await context.sendMessage(message, {
+export default createCommandHandler('help', async (context) => {
+  await context.reply(message, {
     parse_mode: 'HTML'
   }).catch();
-}
-
-export {helpCommand};
+})

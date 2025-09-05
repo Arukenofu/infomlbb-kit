@@ -61,32 +61,4 @@ async function instagramDownloader(url: string): Promise<DownloadResult> {
     : { error: 'Медиа не найдено' };
 }
 
-async function youtubeDownloader(url: string): Promise<DownloadResult> {
-  try {
-    const ytdl = await import('@distube/ytdl-core');
-
-    const info = await ytdl.getInfo(url);
-
-    const format = ytdl.chooseFormat(info.formats, {
-      quality: 'highestvideo'
-    });
-
-    if (!format || !format.url) {
-      return { error: 'Не удалось найти подходящий поток видео' };
-    }
-
-    const medias: DownloadedMediaItem[] = [
-      {
-        type: 'video',
-        url: format.url,
-        thumbnail: info.videoDetails.thumbnails[info.videoDetails.thumbnails.length - 1]?.url
-      }
-    ];
-
-    return { medias, description: info.videoDetails.title };
-  } catch {
-    return { error: 'Неизвестная ошибка' };
-  }
-}
-
-export {twitterDownloader, instagramDownloader, youtubeDownloader};
+export {twitterDownloader, instagramDownloader};
