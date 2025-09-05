@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@dietime/telegraf-media-group": "^1.0.5",
+    "@distube/ytdl-core": "^4.16.12",
     "@sparticuz/chromium": "^133.0.0",
     "@upstash/redis": "^1.35.3",
     "@vercel/node": "^3.2.24",

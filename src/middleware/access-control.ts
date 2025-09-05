@@ -12,7 +12,9 @@ async function accessControlMiddleware (
     return next();
   }
 
-  await context.sendMessage('Вы не добавлены в список разрешённых пользователей');
+  if (context.chat?.type === 'private') {
+    await context.sendMessage('Вы не добавлены в список разрешённых пользователей');
+  }
 
   return;
 }

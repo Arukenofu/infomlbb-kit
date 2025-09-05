@@ -1,5 +1,11 @@
 import { CreateWatermarkOptions } from '../watermark/createTWatermark';
 
+export interface DownloadedMediaItem {
+  type: 'image' | 'video';
+  url: string;
+  thumbnail?: string;
+}
+
 export interface Images {
   type: 'document';
   media: {
