@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
 
-const allowedUsers = [123456789, 987654321];
+const allowedUsers = [1980811472, 779453451, 5276321047, 874192537];
 
 async function accessControlMiddleware (
   context: Context,
