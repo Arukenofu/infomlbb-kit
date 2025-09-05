@@ -3,8 +3,8 @@ import chromium from '@sparticuz/chromium';
 import archiver from 'archiver';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-function splitIntoSections(html: string, maxSections: number = 30): string[][] {
-  const regex = /<blockquote>[\s\S]*?<b>[\s\S]*?<\/blockquote>/g;
+function splitIntoSections(html: string, maxSections: number = 50): string[][] {
+  const regex = /<b><u>[\s\S]*?<\/blockquote>/g;
   const matches = html.match(regex) || [];
 
   const pages: string[][] = [];
@@ -12,7 +12,7 @@ function splitIntoSections(html: string, maxSections: number = 30): string[][] {
   let lineCount = 0;
 
   for (const block of matches) {
-    const blockLines = block.split("\n").length || 1; // хотя бы 1
+    const blockLines = block.split("\n").length;
 
     if (lineCount + blockLines > maxSections && current.length > 0) {
       pages.push(current);
@@ -24,11 +24,7 @@ function splitIntoSections(html: string, maxSections: number = 30): string[][] {
     lineCount += blockLines;
   }
 
-  // Добавляем остаток, даже если lines = 0
-  if (current.length > 0) {
-    pages.push(current);
-  }
-
+  if (current.length > 0) pages.push(current);
   return pages;
 }
 
@@ -45,7 +41,7 @@ async function htmlToImage(htmlContent: string) {
   const browser = await createBrowser();
   const page = await browser.newPage();
 
-  const sections = splitIntoSections(htmlContent, 30);
+  const sections = splitIntoSections(htmlContent, 50);
   const screenshots: Buffer[] = [];
 
   for (const pageSections of sections) {
