@@ -4,7 +4,7 @@ import archiver from 'archiver';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 function splitIntoSections(html: string, maxSections: number = 30): string[][] {
-  const regex = /<b><u>[\s\S]*?<\/blockquote>/g;
+  const regex = /<blockquote>[\s\S]*?<b>[\s\S]*?<\/blockquote>/g;
   const matches = html.match(regex) || [];
 
   const pages: string[][] = [];
@@ -12,7 +12,7 @@ function splitIntoSections(html: string, maxSections: number = 30): string[][] {
   let lineCount = 0;
 
   for (const block of matches) {
-    const blockLines = block.split("\n").length;
+    const blockLines = block.split("\n").length || 1; // хотя бы 1
 
     if (lineCount + blockLines > maxSections && current.length > 0) {
       pages.push(current);
@@ -24,7 +24,11 @@ function splitIntoSections(html: string, maxSections: number = 30): string[][] {
     lineCount += blockLines;
   }
 
-  if (current.length > 0) pages.push(current);
+  // Добавляем остаток, даже если lines = 0
+  if (current.length > 0) {
+    pages.push(current);
+  }
+
   return pages;
 }
 
