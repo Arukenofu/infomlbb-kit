@@ -9,6 +9,10 @@ import { Context, InputFile } from 'grammy';
 import { InputMediaDocument } from 'grammy/types';
 import { downloadFromLink } from '../actions/link-downloader/downloaders';
 import { dedent } from '../shared/helpers/dedent';
+import {
+  DownloadedMediaItem,
+  ParseLinkResult,
+} from '../actions/link-downloader/types';
 
 const handlePost = async (context: Context, description: string) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
@@ -20,6 +24,30 @@ const handlePost = async (context: Context, description: string) => {
 
   await context.reply(response, { parse_mode: 'HTML' });
 };
+
+const handleImages = async (context: Context, imageMedias: DownloadedMediaItem[], options: ParseLinkResult) => {
+  const buffers = await getWatermarkImagesFromLinks(
+    imageMedias.map(m => m.url),
+    options
+  );
+
+  const docs: InputMediaDocument[] = buffers.map((v, i) => ({
+    type: 'document',
+    media: new InputFile(v.media.source, `image-${i + 1}.png`)
+  }));
+
+  await context.replyWithMediaGroup(docs);
+}
+
+  const handleVideos = async (context: Context, videoMedias: DownloadedMediaItem[]) => {
+  const videoLinks = videoMedias
+    .map((v, i) => dedent(`
+      <a href="${v.url}">${v.thumbnail ? v.thumbnail : `Ссылка ${i + 1}`}</a>
+    `))
+    .join("\n\n");
+
+  await context.reply(videoLinks, { parse_mode: "HTML" });
+}
 
 export default createEventHandler('message', async (context) => {
   if (!context.message.text || context.message.photo) return;
@@ -40,31 +68,9 @@ export default createEventHandler('message', async (context) => {
   const imageMedias = medias.filter(m => m.type === 'image');
   const videoMedias = medias.filter(m => m.type === 'video');
 
-  if (imageMedias.length > 0) {
-    const buffers = await getWatermarkImagesFromLinks(
-      imageMedias.map(m => m.url),
-      options
-    );
-
-    const docs: InputMediaDocument[] = buffers.map((v, i) => ({
-      type: 'document',
-      media: new InputFile(v.media.source, `image-${i + 1}.png`)
-    }))
-
-    await context.replyWithMediaGroup(docs);
-  }
-
-  if (videoMedias.length > 0) {
-    const videoLinks = videoMedias
-      .map((v, i) => dedent(`
-        <a href="${v.url}">${v.thumbnail ? v.thumbnail : `Ссылка ${i + 1}`}</a>
-      `))
-      .join("\n\n");
-
-    await context.reply(videoLinks, { parse_mode: "HTML" });
-  }
-
-  if (description) {
-    await handlePost(context, description);
-  }
+  await Promise.all([
+    imageMedias.length > 0 && handleImages(context, imageMedias, options),
+    videoMedias.length > 0 && handleVideos(context, videoMedias),
+    description && handlePost(context, description)
+  ])
 })
