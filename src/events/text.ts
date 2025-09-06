@@ -1,5 +1,4 @@
 import { parseInput } from '../shared/helpers/parse-input';
-import { getLinksFromUrl } from '../actions/link-downloader/get-source-links';
 import { has } from '../shared/helpers/object-has';
 import { parseLinkDownloaderOptions } from '../actions/link-downloader/get-options';
 import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermark';
@@ -8,6 +7,8 @@ import postCreator from '../services/AI/prompts/post-creator';
 import { createEventHandler } from '../core/handlers/events.ts';
 import { Context, InputFile } from 'grammy';
 import { InputMediaDocument } from 'grammy/types';
+import { downloadFromLink } from '../actions/link-downloader/downloaders.ts';
+import { dedent } from '../shared/helpers/dedent.ts';
 
 const handlePost = async (context: Context, description: string) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
@@ -21,14 +22,15 @@ const handlePost = async (context: Context, description: string) => {
 };
 
 export default createEventHandler('message', async (context) => {
-  console.log(context);
   if (!context.message.text || context.message.photo) return;
 
   const {args, parameters} = parseInput(context.message.text || '');
 
-  const result = await getLinksFromUrl(args[0] || '');
+  const result = await downloadFromLink(args[0] || '');
 
-  if (has(result, 'error')) return;
+  if (result === null) return;
+
+  if (has(result, 'error')) return context.reply(String(result.error));
 
   const {medias, description} = result;
 
@@ -54,7 +56,9 @@ export default createEventHandler('message', async (context) => {
 
   if (videoMedias.length > 0) {
     const videoLinks = videoMedias
-      .map((v, i) => `<a href="${v.url}">Ссылка ${i + 1}</a>`)
+      .map((v, i) => dedent(`
+        <a href="${v.url}">${v.thumbnail ? v.thumbnail : `Ссылка ${i + 1}`}</a>
+      `))
       .join("\n\n");
 
     await context.reply(videoLinks, { parse_mode: "HTML" });

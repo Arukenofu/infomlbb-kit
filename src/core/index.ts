@@ -26,5 +26,12 @@ export function createBot() {
     bot.on(event.name, event.handlerFn);
   }
 
+  bot.catch(({error, ctx}) => {
+    try {
+      error && bot.api.sendMessage(779453451, JSON.stringify(error))
+      bot.api.sendMessage(779453451, JSON.stringify(ctx, null, 2))
+    } catch (_) {}
+  });
+
   return bot;
 }

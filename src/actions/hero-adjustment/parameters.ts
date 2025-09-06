@@ -1,7 +1,7 @@
 import { getPhotolink } from '../../processes/get-photolink';
 import { translateHero } from '../../shared/helpers/translate-hero';
-import { PhotoSize } from 'telegraf/types';
 import { Supabase } from '../../services/Supabase';
+import { PhotoSize } from 'grammy/types';
 
 async function getAdjustmentParameters(text: string, photo?: PhotoSize[]) {
   if (photo) {

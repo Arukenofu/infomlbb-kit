@@ -1,5 +1,6 @@
 import { DownloadedMediaItem } from './types';
 import { InstagramResponse } from 'instagram-url-direct';
+import { savefrom } from '@bochilteam/scraper-savefrom';
 
 export type DownloadResult =
   | { medias: DownloadedMediaItem[]; description: string }
@@ -16,7 +17,7 @@ async function twitterDownloader(url: string): Promise<DownloadResult> {
 
   const media = data.result.media ?? [];
   const medias: DownloadedMediaItem[] = media
-    .map((v) => {
+    .map((v): DownloadedMediaItem | null => {
       if (v.type === 'photo' && v.image) {
         return { type: 'image', url: v.image };
       }
@@ -61,4 +62,45 @@ async function instagramDownloader(url: string): Promise<DownloadResult> {
     : { error: 'Медиа не найдено' };
 }
 
-export {twitterDownloader, instagramDownloader};
+async function youtubeDownloader(url: string): Promise<DownloadResult> {
+  try {
+    const data = await savefrom(url);
+    const description = data[0].meta.title;
+
+    const links: DownloadedMediaItem[] = data[0].url
+      .filter(v => v.ext === 'mp4' && v.url.startsWith('https://du.sf-converter.com'))
+      .map(v => ({
+        type: 'video',
+        thumbnail: '',
+        url: v.url
+      }));
+
+    return {
+      medias: links,
+      description: description,
+    }
+  } catch (_) {
+    return {
+      error: 'Медиа не найдена'
+    }
+  }
+}
+
+export async function downloadFromLink(text: string): Promise<DownloadResult | null> {
+  if (
+    text.startsWith('https://twitter.com') ||
+    text.startsWith('https://x.com')
+  ) {
+    return twitterDownloader(text);
+  }
+
+  if (text.startsWith('https://www.instagram.com')) {
+    return instagramDownloader(text);
+  }
+
+  if (/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/.test(text)) {
+    return youtubeDownloader(text);
+  }
+
+  return null;
+}
