@@ -3,7 +3,7 @@ import { AIService } from '../services/AI';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { splitAndSendMessage } from '../processes/split-message';
 import patchTranslator from '../services/AI/prompts/patch-translator';
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createCommandHandler } from '../core/handlers/command';
 
 export default createCommandHandler('patch', async (context) => {
   const photos = context.message?.photo;

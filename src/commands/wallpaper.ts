@@ -1,7 +1,7 @@
 import { translateHero } from '../shared/helpers/translate-hero';
 import { Supabase } from '../services/Supabase';
-import { createCommandHandler } from '../core/handlers/command.ts';
-import { getPayload } from '../shared/helpers/getPayload.ts';
+import { createCommandHandler } from '../core/handlers/command';
+import { getPayload } from '../shared/helpers/getPayload';
 import { InputFile } from 'grammy';
 
 export default createCommandHandler('wallpaper', async (context) => {

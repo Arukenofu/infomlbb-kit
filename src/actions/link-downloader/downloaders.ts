@@ -64,6 +64,7 @@ async function instagramDownloader(url: string): Promise<DownloadResult> {
 
 async function youtubeDownloader(url: string): Promise<DownloadResult> {
   try {
+    console.log('youtube downloader');
     const data = await savefrom(url);
     const description = data[0].meta.title;
 
@@ -80,6 +81,7 @@ async function youtubeDownloader(url: string): Promise<DownloadResult> {
       description: description,
     }
   } catch (_) {
+    console.log(_);
     return {
       error: 'Медиа не найдена'
     }

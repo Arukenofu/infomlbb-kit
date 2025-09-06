@@ -1,12 +1,12 @@
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createCommandHandler } from '../core/handlers/command';
 import { Context } from 'grammy';
-import { parseAlignCommands } from '../actions/watermark/align.ts';
-import { processImage } from '../processes/process-watermark.ts';
-import { createWatermark } from '../actions/watermark/createTWatermark.ts';
-import { createOverlay } from '../actions/watermark/createOverlay.ts';
+import { parseAlignCommands } from '../actions/watermark/align';
+import { processImage } from '../processes/process-watermark';
+import { createWatermark } from '../actions/watermark/createTWatermark';
+import { createOverlay } from '../actions/watermark/createOverlay';
 import { BlendMode } from 'jimp';
-import { has } from '../shared/helpers/object-has.ts';
-import { parseInputText } from '../processes/get-text.ts';
+import { has } from '../shared/helpers/object-has';
+import { parseInputText } from '../processes/get-text';
 
 export default createCommandHandler("twatermark", async (context: Context) => {
   const { args } = parseInputText(context);

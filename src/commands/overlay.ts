@@ -1,6 +1,6 @@
-import { createCommandHandler } from '../core/handlers/command.ts';
-import { processImage } from '../processes/process-watermark.ts';
-import { createOverlay } from '../actions/watermark/createOverlay.ts';
+import { createCommandHandler } from '../core/handlers/command';
+import { processImage } from '../processes/process-watermark';
+import { createOverlay } from '../actions/watermark/createOverlay';
 import { Context } from 'grammy';
 
 export default createCommandHandler("overlay", async (context: Context) => {

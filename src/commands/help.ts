@@ -1,4 +1,4 @@
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createCommandHandler } from '../core/handlers/command';
 
 const message =
 `

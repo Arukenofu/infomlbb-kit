@@ -1,10 +1,10 @@
 import { Bot } from 'grammy';
-import { middlewares } from '../.generated/middlewares.ts';
-import { commands } from '../.generated/commands.ts';
-import { filters } from '../.generated/filters.ts';
-import { events } from '../.generated/events.ts';
+import { middlewares } from '../.generated/middlewares';
+import { commands } from '../.generated/commands';
+import { filters } from '../.generated/filters';
+import { events } from '../.generated/events';
 
-export { telegram } from "./telegram.ts";
+export { telegram } from "./telegram";
 
 export function createBot() {
   const bot = new Bot(process.env.BOT_TOKEN);

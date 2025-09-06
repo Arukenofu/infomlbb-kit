@@ -1,5 +1,5 @@
-import { createCommandHandler } from '../core/handlers/command.ts';
-import { dedent } from '../shared/helpers/dedent.ts';
+import { createCommandHandler } from '../core/handlers/command';
+import { dedent } from '../shared/helpers/dedent';
 
 export default createCommandHandler('start', async (context) => {
   await context.reply(dedent(`

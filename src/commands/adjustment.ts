@@ -8,10 +8,10 @@ import {
 import { createOverlay } from '../actions/watermark/createOverlay';
 import { createWatermark } from '../actions/watermark/createTWatermark';
 import { getAdjustmentParameters } from '../actions/hero-adjustment/parameters';
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createCommandHandler } from '../core/handlers/command';
 import { InputFile } from 'grammy';
-import { getText } from '../processes/get-text.ts';
-import { getPayload } from '../shared/helpers/getPayload.ts';
+import { getText } from '../processes/get-text';
+import { getPayload } from '../shared/helpers/getPayload';
 
 export default createCommandHandler("adjustment", async (context) => {
   const payload = getPayload(getText(context));

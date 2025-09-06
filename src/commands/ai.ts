@@ -2,7 +2,7 @@ import { AIService } from '../services/AI';
 import { splitMessage } from '../processes/split-message';
 import { getPhotolink } from '../processes/get-photolink';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createCommandHandler } from '../core/handlers/command';
 
 export default createCommandHandler('ai',async (context) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {

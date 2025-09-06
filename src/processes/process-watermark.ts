@@ -1,6 +1,6 @@
 import { Context, InputFile } from 'grammy';
-import { JimpReadType } from '../shared/types/jimp-types.ts';
-import { getPhotolink } from './get-photolink.ts';
+import { JimpReadType } from '../shared/types/jimp-types';
+import { getPhotolink } from './get-photolink';
 
 export const processImage = async (
   context: Context,

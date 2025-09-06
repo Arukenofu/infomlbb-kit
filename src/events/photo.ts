@@ -1,12 +1,12 @@
 import { parseInput } from '../shared/helpers/parse-input';
-import { createEventHandler } from '../core/handlers/events.ts';
-import overlay from '../commands/overlay.ts';
-import watermark from '../commands/watermark.ts';
-import twatermark from '../commands/twatermark.ts';
-import adjustment from '../commands/adjustment.ts';
-import translate from '../commands/translate.ts';
-import ai from '../commands/ai.ts';
-import { createCommandHandler } from '../core/handlers/command.ts';
+import { createEventHandler } from '../core/handlers/events';
+import overlay from '../commands/overlay';
+import watermark from '../commands/watermark';
+import twatermark from '../commands/twatermark';
+import adjustment from '../commands/adjustment';
+import translate from '../commands/translate';
+import ai from '../commands/ai';
+import { createCommandHandler } from '../core/handlers/command';
 
 type Command = ReturnType<typeof createCommandHandler>
 

@@ -4,11 +4,11 @@ import { parseLinkDownloaderOptions } from '../actions/link-downloader/get-optio
 import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermark';
 import { AIService } from '../services/AI';
 import postCreator from '../services/AI/prompts/post-creator';
-import { createEventHandler } from '../core/handlers/events.ts';
+import { createEventHandler } from '../core/handlers/events';
 import { Context, InputFile } from 'grammy';
 import { InputMediaDocument } from 'grammy/types';
-import { downloadFromLink } from '../actions/link-downloader/downloaders.ts';
-import { dedent } from '../shared/helpers/dedent.ts';
+import { downloadFromLink } from '../actions/link-downloader/downloaders';
+import { dedent } from '../shared/helpers/dedent';
 
 const handlePost = async (context: Context, description: string) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {

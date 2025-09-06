@@ -1,7 +1,7 @@
 import { createPatchNodeTree, renderPatchHTML } from '../actions/format-patchnotes';
 import { splitMessage } from '../processes/split-message';
-import { createCommandHandler } from '../core/handlers/command.ts';
-import { getPayload } from '../shared/helpers/getPayload.ts';
+import { createCommandHandler } from '../core/handlers/command';
+import { getPayload } from '../shared/helpers/getPayload';
 
 export default createCommandHandler('format', async (context) => {
   const payload = getPayload(context.message?.text || '');

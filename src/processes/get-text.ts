@@ -1,5 +1,5 @@
 import { Context } from 'grammy';
-import { parseInput } from '../shared/helpers/parse-input.ts';
+import { parseInput } from '../shared/helpers/parse-input';
 
 export function getText(context: Context) {
   return context.message?.text || context.message?.caption || "";

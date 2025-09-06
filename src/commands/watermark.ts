@@ -1,10 +1,10 @@
-import { createCommandHandler } from '../core/handlers/command.ts';
-import { parseAlignCommands } from '../actions/watermark/align.ts';
-import { has } from '../shared/helpers/object-has.ts';
-import { processImage } from '../processes/process-watermark.ts';
-import { createWatermark } from '../actions/watermark/createTWatermark.ts';
+import { createCommandHandler } from '../core/handlers/command';
+import { parseAlignCommands } from '../actions/watermark/align';
+import { has } from '../shared/helpers/object-has';
+import { processImage } from '../processes/process-watermark';
+import { createWatermark } from '../actions/watermark/createTWatermark';
 import { Context } from 'grammy';
-import { parseInputText } from '../processes/get-text.ts';
+import { parseInputText } from '../processes/get-text';
 
 export default createCommandHandler("watermark", async (context: Context) => {
   const { args } = parseInputText(context);

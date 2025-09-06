@@ -1,15 +1,15 @@
-import { createFilterHandler } from '../core/handlers/filter.ts';
+import { createFilterHandler } from '../core/handlers/filter';
 import { mediaGroup } from 'grammy-media-group';
 import { InputMediaDocument, Message } from 'grammy/types';
-import { IAlignments, parseAlignCommands } from '../actions/watermark/align.ts';
-import { createWatermark } from '../actions/watermark/createTWatermark.ts';
-import { createOverlay } from '../actions/watermark/createOverlay.ts';
-import { getMultiplePhotoLinks } from '../processes/get-photolink.ts';
-import { parseInput } from '../shared/helpers/parse-input.ts';
+import { IAlignments, parseAlignCommands } from '../actions/watermark/align';
+import { createWatermark } from '../actions/watermark/createTWatermark';
+import { createOverlay } from '../actions/watermark/createOverlay';
+import { getMultiplePhotoLinks } from '../processes/get-photolink';
+import { parseInput } from '../shared/helpers/parse-input';
 import { AIService } from '../services/AI';
-import patchTranslator from '../services/AI/prompts/patch-translator.ts';
-import { fetchImageAsBase64 } from '../shared/helpers/base64.ts';
-import { has } from '../shared/helpers/object-has.ts';
+import patchTranslator from '../services/AI/prompts/patch-translator';
+import { fetchImageAsBase64 } from '../shared/helpers/base64';
+import { has } from '../shared/helpers/object-has';
 import { InputFile } from 'grammy';
 
 type MediaGroup = (Message.PhotoMessage | Message.VideoMessage)[];
