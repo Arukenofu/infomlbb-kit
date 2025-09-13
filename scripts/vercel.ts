@@ -9,13 +9,32 @@ function splitIntoSections(html: string, maxSections: number = 50): string[][] {
 
   if (matches.length === 0) return [];
 
-  const totalBlocks = matches.length;
-  const blocksPerPage = Math.ceil(totalBlocks / Math.ceil(totalBlocks / maxSections));
+  const blocks = matches.map(block => ({
+    html: block,
+    lines: block.split("\n").length
+  }));
+
+  const totalLines = blocks.reduce((sum, b) => sum + b.lines, 0);
+
+  const totalPages = Math.ceil(totalLines / maxSections);
+  const targetLines = Math.ceil(totalLines / totalPages);
 
   const pages: string[][] = [];
-  for (let i = 0; i < totalBlocks; i += blocksPerPage) {
-    pages.push(matches.slice(i, i + blocksPerPage));
+  let current: string[] = [];
+  let currentLines = 0;
+
+  for (const block of blocks) {
+    if (currentLines + block.lines > targetLines && current.length > 0) {
+      pages.push(current);
+      current = [];
+      currentLines = 0;
+    }
+
+    current.push(block.html);
+    currentLines += block.lines;
   }
+
+  if (current.length > 0) pages.push(current);
 
   return pages;
 }
