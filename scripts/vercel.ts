@@ -7,24 +7,16 @@ function splitIntoSections(html: string, maxSections: number = 50): string[][] {
   const regex = /<u><b>[\s\S]*?<\/blockquote>/g;
   const matches = html.match(regex) || [];
 
+  if (matches.length === 0) return [];
+
+  const totalBlocks = matches.length;
+  const blocksPerPage = Math.ceil(totalBlocks / Math.ceil(totalBlocks / maxSections));
+
   const pages: string[][] = [];
-  let current: string[] = [];
-  let lineCount = 0;
-
-  for (const block of matches) {
-    const blockLines = block.split("\n").length;
-
-    if (lineCount + blockLines > maxSections && current.length > 0) {
-      pages.push(current);
-      current = [];
-      lineCount = 0;
-    }
-
-    current.push(block);
-    lineCount += blockLines;
+  for (let i = 0; i < totalBlocks; i += blocksPerPage) {
+    pages.push(matches.slice(i, i + blocksPerPage));
   }
 
-  if (current.length > 0) pages.push(current);
   return pages;
 }
 
