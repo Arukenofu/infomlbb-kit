@@ -4,7 +4,7 @@ import archiver from 'archiver';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 function splitIntoSections(html: string, maxSections: number = 50): string[][] {
-  const regex = /<b><u>[\s\S]*?<\/blockquote>/g;
+  const regex = /<u><b>[\s\S]*?<\/blockquote>/g;
   const matches = html.match(regex) || [];
 
   const pages: string[][] = [];
@@ -32,7 +32,7 @@ async function createBrowser() {
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath:   await chromium.executablePath(),
+    executablePath: await chromium.executablePath(),
     headless: chromium.headless,
   });
 }
