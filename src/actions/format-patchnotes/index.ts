@@ -1,121 +1,123 @@
-export type PatchNode =
-  | { type: 'text'; value: string }
-  | { type: 'element'; tag: string; children: PatchNode[]; attrs?: Record<string, string> };
+import { findHero } from '../../shared/helpers/generate-russian-forms';
+import { Supabase } from '../../services/Supabase';
 
-export interface FormatPatchNotesOptions {
-  onHeroHeader?: (ctx: { line: string; hero?: string; node: PatchNode }) => PatchNode | void;
-  onSkillHeader?: (ctx: { line: string; node: PatchNode }) => PatchNode | void;
-  onParagraph?: (ctx: { line: string; node: PatchNode }) => PatchNode | void;
-  onTaggedLine?: (ctx: { line: string; tags: string[]; node: PatchNode }) => PatchNode | void;
+interface FormatPatchNotesOptions {
+  lineBreak?: boolean;
+  wrapParagraph?: boolean;
+  useAutoEmoji?: boolean;
 }
 
-export function createTextNode(value: string): PatchNode {
-  return { type: 'text', value };
-}
-
-export function createElementNode(
-  tag: string,
-  children: PatchNode[] = [],
-  attrs?: Record<string, string>,
-): PatchNode {
-  return { type: 'element', tag, children, attrs };
-}
-
-export function createPatchNodeTree(
+function formatPatchNotes(
   text: string,
-  options: FormatPatchNotesOptions = {},
-): PatchNode[] {
-  const lines = text.split('\n');
-  const output: PatchNode[] = [];
-  let quoteBuffer: PatchNode[] = [];
+  options: FormatPatchNotesOptions = {}
+): string {
+  const { lineBreak = true, wrapParagraph = false, useAutoEmoji = true } = options;
+
+  const lines = text.split("\n");
+  const output: string[] = [];
+  let quoteBuffer: string[] = [];
 
   function flushQuotes() {
     if (quoteBuffer.length) {
-      output.push(createElementNode('blockquote', quoteBuffer));
+      output.push(`<blockquote>${quoteBuffer.join("\n")}</blockquote>`);
       quoteBuffer = [];
     }
   }
 
-  for (let raw of lines) {
-    let line = raw.trim();
+  const patterns: {
+    test: (line: string) => boolean;
+    format: (line: string) => string | null;
+    flushBefore?: boolean;
+    pushToQuotes?: boolean;
+  }[] = [
+    {
+      // Секция (section: или s:)
+      test: (line) => /^(section:|s:)\s*/i.test(line),
+      flushBefore: true,
+      format: (line) => {
+        line = line.replace(/^(section:|s:)\s*/i, "");
+        const linePrefix = lineBreak ? "\n" : "";
+
+        let formatted = `<u><b>${line}`;
+        const heroName = line.split(" ").slice(1).join(" ").trim().toLowerCase();
+        const heroData = findHero(heroName);
+        if (heroData && useAutoEmoji) {
+          const icon = Supabase.getHeroIcon(heroData.en);
+          formatted += ` <custom-emoji-wrapper><img src="${icon}" alt=""></custom-emoji-wrapper>`;
+        }
+        formatted += `</b></u>`;
+        return linePrefix + formatted;
+      },
+    },
+    {
+      // Подзаголовок (b:)
+      test: (line) => /^b:\s*/i.test(line),
+      pushToQuotes: true,
+      format: (line) => {
+        line = line.replace(/^b:\s*/i, "");
+        return `<b>${line}</b>`;
+      },
+    },
+    {
+      // Авто-детект секции (если "Усиление/Ослабление/Изменение ...")
+      test: (line) => /^(Усиление|Ослабление|Изменение|Ревамп) .+/.test(line),
+      flushBefore: true,
+      format: (line) => {
+        const hasEmoji = /\p{Emoji_Presentation}/gu.test(line);
+        const linePrefix = lineBreak ? "\n" : "";
+
+        let formatted = `<u><b>${line}`;
+        if (!hasEmoji) {
+          const heroName = line.split(" ").slice(1).join(" ").trim().toLowerCase();
+          const heroData = findHero(heroName);
+          if (heroData && useAutoEmoji) {
+            const icon = Supabase.getHeroIcon(heroData.en);
+            formatted += ` <custom-emoji-wrapper><img src="${icon}" alt=""></custom-emoji-wrapper>`;
+          }
+        }
+        formatted += "</b></u>";
+        return linePrefix + formatted;
+      },
+    },
+    {
+      // Авто-детекст подзаголовок
+      test: (line) => /^(\S+(?:\s+\S+){0,2})\s*-\s*\S+$/.test(line),
+      pushToQuotes: true,
+      format: (line) => `<b>${line}</b> \n`,
+    }
+  ];
+
+  for (let rawLine of lines) {
+    const line = rawLine.trim();
     if (!line) {
       flushQuotes();
       continue;
     }
 
-    let tags: string[] = [];
-    while (true) {
-      const match = line.match(/^([bu]):\s*/i);
-      if (!match) break;
-      tags.push(match[1].toLowerCase());
-      line = line.slice(match[0].length);
-    }
-    if (tags.length) {
-      flushQuotes();
-      let node: PatchNode = createTextNode(line);
-      for (const tag of tags.reverse()) {
-        node = createElementNode(tag, [node]);
+    let handled = false;
+    for (const rule of patterns) {
+      if (rule.test(line)) {
+        if (rule.flushBefore) flushQuotes();
+
+        const formatted = rule.format(line);
+        if (rule.pushToQuotes && formatted) {
+          quoteBuffer.push(formatted);
+        } else if (formatted) {
+          output.push(formatted);
+        }
+        handled = true;
+        break;
       }
-      if (options.onTaggedLine) {
-        const modified = options.onTaggedLine({ line, tags, node });
-        if (modified) node = modified;
-      }
-      output.push(node);
-      continue;
     }
 
-    if (/^(Усиление|Ослабление|Изменение) .+/.test(line)) {
-      flushQuotes();
-
-      const heroName = line.split(' ').slice(1).join(' ').trim().toLowerCase();
-      let node = createElementNode('b', [createElementNode('u', [createTextNode(line)])]);
-
-      if (options.onHeroHeader) {
-        const modified = options.onHeroHeader({ line, hero: heroName, node });
-        if (modified) node = modified;
-      }
-
-      output.push(node);
-      continue;
+    if (!handled) {
+      quoteBuffer.push(wrapParagraph ? `<p>${line}</p>` : line);
     }
-
-    if (
-      /^(Пассивный|Атрибуты|\d+ Навык|Ультимейт)$/i.test(line.split('-')[0].trim()) ||
-      /\[(Усиление|Ослабление|Изменение)]/.test(line.trim())
-    ) {
-      let node = createElementNode('b', [createTextNode(line)]);
-      if (options.onSkillHeader) {
-        const modified = options.onSkillHeader({ line, node });
-        if (modified) node = modified;
-      }
-      quoteBuffer.push(node);
-      continue;
-    }
-
-    let node: PatchNode = createTextNode(line);
-    if (options.onParagraph) {
-      const modified = options.onParagraph({ line, node });
-      if (modified) node = modified;
-    }
-    quoteBuffer.push(node);
   }
 
   flushQuotes();
-  return output;
+
+  return output.join(lineBreak ? "\n" : "");
 }
 
-export function renderPatchHTML(nodes: PatchNode[], lineBreak = true): string {
-  return nodes
-    .map((n) => {
-      if (n.type === 'text') return n.value;
-      const attrs = n.attrs
-        ? ' ' +
-        Object.entries(n.attrs)
-          .map(([k, v]) => `${k}="${v}"`)
-          .join(' ')
-        : '';
-      const inner = renderPatchHTML(n.children, lineBreak);
-      return `<${n.tag}${attrs}>${inner}</${n.tag}>`;
-    })
-    .join(lineBreak ? '\n' : '');
-}
+export { formatPatchNotes };
