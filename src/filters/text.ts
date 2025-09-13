@@ -4,7 +4,6 @@ import { parseLinkDownloaderOptions } from '../actions/link-downloader/get-optio
 import { getWatermarkImagesFromLinks } from '../actions/link-downloader/watermark';
 import { AIService } from '../services/AI';
 import postCreator from '../services/AI/prompts/post-creator';
-import { createEventHandler } from '../core/handlers/events';
 import { Context, InputFile } from 'grammy';
 import { InputMediaDocument } from 'grammy/types';
 import { downloadFromLink } from '../actions/link-downloader/downloaders';
@@ -13,6 +12,7 @@ import {
   DownloadedMediaItem,
   ParseLinkResult,
 } from '../actions/link-downloader/types';
+import { createFilterHandler } from '../core/handlers/filter';
 
 const handlePost = async (context: Context, description: string) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
@@ -39,7 +39,7 @@ const handleImages = async (context: Context, imageMedias: DownloadedMediaItem[]
   await context.replyWithMediaGroup(docs);
 }
 
-  const handleVideos = async (context: Context, videoMedias: DownloadedMediaItem[]) => {
+const handleVideos = async (context: Context, videoMedias: DownloadedMediaItem[]) => {
   const videoLinks = videoMedias
     .map((v, i) => dedent(`
       <a href="${v.url}">${v.thumbnail ? v.thumbnail : `Ссылка ${i + 1}`}</a>
@@ -49,9 +49,16 @@ const handleImages = async (context: Context, imageMedias: DownloadedMediaItem[]
   await context.reply(videoLinks, { parse_mode: "HTML" });
 }
 
-export default createEventHandler('message', async (context) => {
-  if (!context.message.text || context.message.photo) return;
+function isTextOnlyMessage(
+  ctx: Context,
+): ctx is Context & { message: { text: string; photo?: undefined } } {
+  return (
+    ctx.message?.text !== undefined &&
+    ctx.message?.photo === undefined
+  )
+}
 
+export default createFilterHandler(isTextOnlyMessage, async (context) => {
   const {args, parameters} = parseInput(context.message.text || '');
 
   const result = await downloadFromLink(args[0] || '');

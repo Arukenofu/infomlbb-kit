@@ -1,6 +1,7 @@
 import { DownloadedMediaItem } from './types';
 import { InstagramResponse } from 'instagram-url-direct';
 import { savefrom } from '@bochilteam/scraper-savefrom';
+import { handleError } from '../../core/handlers/error';
 
 export type DownloadResult =
   | { medias: DownloadedMediaItem[]; description: string }
@@ -12,6 +13,7 @@ async function twitterDownloader(url: string): Promise<DownloadResult> {
 
   const data = await download(updatedUrl);
   if (data.status === 'error' || !data.result) {
+    await handleError(data);
     return { error: 'Неизвестная ошибка' };
   }
 
@@ -41,7 +43,8 @@ async function instagramDownloader(url: string): Promise<DownloadResult> {
   let data: InstagramResponse;
   try {
     data = (await download(cleanUrl)) as InstagramResponse;
-  } catch {
+  } catch (_) {
+    await handleError(_);
     return { error: 'Неизвестная ошибка' };
   }
 
@@ -64,7 +67,6 @@ async function instagramDownloader(url: string): Promise<DownloadResult> {
 
 async function youtubeDownloader(url: string): Promise<DownloadResult> {
   try {
-    console.log('youtube downloader');
     const data = await savefrom(url);
     const description = data[0].meta.title;
 
@@ -81,7 +83,7 @@ async function youtubeDownloader(url: string): Promise<DownloadResult> {
       description: description,
     }
   } catch (_) {
-    console.log(_);
+    await handleError(_);
     return {
       error: 'Медиа не найдена'
     }

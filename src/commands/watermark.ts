@@ -8,7 +8,7 @@ import { parseInputText } from '../processes/get-text';
 
 export default createCommandHandler("watermark", async (context: Context) => {
   const { args } = parseInputText(context);
-  const aligns = await parseAlignCommands(args);
+  const aligns = parseAlignCommands(args);
 
   if (has(aligns, "error")) return;
 

@@ -3,6 +3,7 @@ import { splitMessage } from '../processes/split-message';
 import { getPhotolink } from '../processes/get-photolink';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { createCommandHandler } from '../core/handlers/command';
+import { getPhotos } from '../processes/get-photos';
 
 export default createCommandHandler('ai',async (context) => {
   const ai = new AIService(process.env.AI_SERVICE_KEY, {
@@ -11,7 +12,7 @@ export default createCommandHandler('ai',async (context) => {
 
   let responseText: string;
 
-  const photos = context.message?.photo;
+  const photos = getPhotos(context) ;
 
   if (photos) {
     const link = await getPhotolink(photos);

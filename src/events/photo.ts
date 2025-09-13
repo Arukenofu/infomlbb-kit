@@ -19,7 +19,7 @@ const commands: Record<string, Command> = {
   '/ai': ai
 };
 
-export default createEventHandler('message:photo', async (context) => {
+export default createEventHandler(['message:photo'], async (context) => {
   const caption = context.message.caption || '';
   const {command} = parseInput(caption);
 

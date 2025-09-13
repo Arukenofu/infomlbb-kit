@@ -12,12 +12,13 @@ import { createCommandHandler } from '../core/handlers/command';
 import { InputFile } from 'grammy';
 import { getText } from '../processes/get-text';
 import { getPayload } from '../shared/helpers/getPayload';
+import { getPhotos } from '../processes/get-photos';
 
 export default createCommandHandler("adjustment", async (context) => {
   const payload = getPayload(getText(context));
 
   const { imageLink, adjustmentCommand } = await getAdjustmentParameters(
-    payload, context.message?.photo
+    payload, getPhotos(context)
   );
 
   const hero = payload.split(' ')?.[1] || "";

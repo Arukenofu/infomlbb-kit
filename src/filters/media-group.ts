@@ -1,9 +1,7 @@
 import { createFilterHandler } from '../core/handlers/filter';
 import { mediaGroup } from 'grammy-media-group';
 import { InputMediaDocument, Message } from 'grammy/types';
-import { IAlignments, parseAlignCommands } from '../actions/watermark/align';
-import { createWatermark } from '../actions/watermark/createTWatermark';
-import { createOverlay } from '../actions/watermark/createOverlay';
+import { parseAlignCommands } from '../actions/watermark/align';
 import { getMultiplePhotoLinks } from '../processes/get-photolink';
 import { parseInput } from '../shared/helpers/parse-input';
 import { AIService } from '../services/AI';
@@ -11,6 +9,10 @@ import patchTranslator from '../services/AI/prompts/patch-translator';
 import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { has } from '../shared/helpers/object-has';
 import { InputFile } from 'grammy';
+import {
+  defaultWatermarkProcessor,
+  watermarkProcessors,
+} from '../actions/watermark/processors';
 
 type MediaGroup = (Message.PhotoMessage | Message.VideoMessage)[];
 
@@ -19,25 +21,6 @@ function isOnlyPhotoGroup(media_group: MediaGroup) {
     (msg): msg is Message.PhotoMessage => "photo" in msg
   );
 }
-
-type ImageProcessor = (link: string, aligns?: IAlignments) => Promise<Buffer>;
-
-const defaultProcessor: ImageProcessor = async (link, aligns) => {
-  const image = await createWatermark(await createOverlay(link), {
-    ...aligns
-  });
-  return image.getBuffer('image/png');
-};
-
-const processors: Record<string, ImageProcessor> = {
-  '/overlay': async (link) =>
-    createOverlay(link).then(img => img.getBuffer('image/png')),
-
-  '/watermark': async (link, aligns) =>
-    createWatermark(link, aligns).then(img => img.getBuffer('image/png')),
-
-  '/twatermark': defaultProcessor
-};
 
 export default createFilterHandler(mediaGroup, async (context) => {
   const medias = context.media_group;
@@ -65,10 +48,12 @@ export default createFilterHandler(mediaGroup, async (context) => {
 
   await context.reply('Создание изображении...');
 
-  const output: InputMediaDocument[] = [];
-  const processor = processors[command ?? ''] ?? defaultProcessor;
+  const processorKey = (command ?? '').replace('/', '');
 
-  const aligns = await parseAlignCommands(args);
+  const output: InputMediaDocument[] = [];
+  const processor = watermarkProcessors[processorKey] ?? defaultWatermarkProcessor;
+
+  const aligns = parseAlignCommands(args);
 
   if (has(aligns, 'error')) return context.reply('Ошибка вычисления координат вотермарки');
 

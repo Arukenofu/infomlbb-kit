@@ -7,7 +7,7 @@ async function parseLinkDownloaderOptions(
   parameters: string[],
 ): Promise<ParseLinkResult | {}> {
   const applyWatermark = !parameters.includes('--no');
-  const result = await parseAlignCommands(args);
+  const result = parseAlignCommands(args);
 
   if (has(result, 'error')) {
     return {};

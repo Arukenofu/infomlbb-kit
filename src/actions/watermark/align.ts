@@ -9,7 +9,7 @@ interface Error {
   error: string;
 }
 
-async function parseAlignCommands(args: string[]): Promise<IAlignments | Error> {
+function parseAlignCommands(args: string[]): IAlignments | Error {
   const aligns: IAlignments = {};
 
   const isXAlignment = (val: string): val is XAlignments =>

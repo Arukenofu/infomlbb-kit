@@ -4,9 +4,10 @@ import { fetchImageAsBase64 } from '../shared/helpers/base64';
 import { splitAndSendMessage } from '../processes/split-message';
 import patchTranslator from '../services/AI/prompts/patch-translator';
 import { createCommandHandler } from '../core/handlers/command';
+import { getPhotos } from '../processes/get-photos';
 
 export default createCommandHandler('patch', async (context) => {
-  const photos = context.message?.photo;
+  const photos = getPhotos(context);
   if (!photos || photos.length === 0) return context.reply('Прикрепите изображение');
 
   const link = await getPhotolink(photos);

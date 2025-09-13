@@ -10,7 +10,7 @@ import { parseInputText } from '../processes/get-text';
 
 export default createCommandHandler("twatermark", async (context: Context) => {
   const { args } = parseInputText(context);
-  const aligns = await parseAlignCommands(args);
+  const aligns = parseAlignCommands(args);
 
   if (has(aligns, 'error')) return context.reply('Ошибка вычисления координат вотермарки')
 

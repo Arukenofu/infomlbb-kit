@@ -3,6 +3,7 @@ import { middlewares } from '../.generated/middlewares';
 import { commands } from '../.generated/commands';
 import { filters } from '../.generated/filters';
 import { events } from '../.generated/events';
+import { handleError } from './handlers/error';
 
 export { telegram } from "./telegram";
 
@@ -19,6 +20,7 @@ export function createBot() {
 
   for (const filter of filters) {
     const { predicateFn, handlerFn } = filter;
+    // @ts-ignore
     bot.filter(predicateFn, handlerFn);
   }
 
@@ -26,10 +28,14 @@ export function createBot() {
     bot.on(event.name, event.handlerFn);
   }
 
-  bot.catch(({error, ctx}) => {
+  bot.catch(async ({error, ctx}) => {
     try {
-      error && bot.api.sendMessage(779453451, JSON.stringify(error))
-      bot.api.sendMessage(779453451, JSON.stringify(ctx, null, 2))
+      error && await handleError(error);
+      await handleError(ctx);
+
+      try {
+        await ctx.reply('Произошла неизвестная ошибка')
+      } catch (_) {}
     } catch (_) {}
   });
 
