@@ -2,38 +2,35 @@ import { DownloadedMediaItem } from './types';
 import { InstagramResponse } from 'instagram-url-direct';
 import { savefrom } from '@bochilteam/scraper-savefrom';
 import { handleError } from '../../core/handlers/error';
+import { Scraper } from '@the-convocation/twitter-scraper'
 
 export type DownloadResult =
   | { medias: DownloadedMediaItem[]; description: string }
   | { error: string };
 
 async function twitterDownloader(url: string): Promise<DownloadResult> {
-  const { TwitterDL: download } = await import('twitter-downloader');
-  const updatedUrl = url.replace('x.com', 'twitter.com').split(' ')[0];
+  const scrapper = new Scraper();
+  const match = url.match(/status\/(\d+)/);
+  const id = match ? match[1] : null;
+  if (!id) return {error: 'Неизвестный тип ссылки'};
 
-  const data = await download(updatedUrl);
-  if (data.status === 'error' || !data.result) {
-    await handleError(data);
-    return { error: 'Неизвестная ошибка' };
+  const tweet = await scrapper.getTweet(id.toString());
+  if (!tweet) return {error: 'Пост не найден'};
+
+  const description = tweet.text || '';
+  const images: DownloadedMediaItem[] = tweet.photos.map(photo => ({
+    type: 'image',
+    url: photo.url
+  }));
+  const videos: DownloadedMediaItem[] = tweet.videos.map(video => ({
+    type: 'video',
+    url: video.url!
+  }));
+
+  return {
+    medias: [...images, ...videos],
+    description: description
   }
-
-  const media = data.result.media ?? [];
-  const medias: DownloadedMediaItem[] = media
-    .map((v): DownloadedMediaItem | null => {
-      if (v.type === 'photo' && v.image) {
-        return { type: 'image', url: v.image };
-      }
-      if (v.type === 'video' && v.videos?.length) {
-        const best = v.videos[0];
-        return { type: 'video', url: best.url };
-      }
-      return null;
-    })
-    .filter(Boolean) as DownloadedMediaItem[];
-
-  return medias.length
-    ? { medias, description: data.result.description }
-    : { error: 'Медиа не найдено' };
 }
 
 async function instagramDownloader(url: string): Promise<DownloadResult> {
