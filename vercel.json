@@ -1,11 +1,21 @@
 {
   "version": 2,
   "public": true,
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/(.*)",
-      "destination": "api/index.ts"
+      "source": "/",
+      "destination": "/html-to-image",
+      "permanent": false
     }
   ],
-  "redirects": [{ "source": "/", "destination": "/html-to-image", "permanent": false }]
+  "rewrites": [
+    {
+      "source": "/html-to-image",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/visit-page",
+      "destination": "/api/visit.ts"
+    }
+  ]
 }

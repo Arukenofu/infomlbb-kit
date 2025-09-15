@@ -41,7 +41,7 @@ function splitIntoSections(html: string, maxSections: number = 50): string[][] {
 
 async function createBrowser() {
   return puppeteer.launch({
-    args: chromium.args,
+    args: [...chromium.args, "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process"],
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
     headless: chromium.headless,
@@ -82,8 +82,38 @@ async function htmlToImage(htmlContent: string) {
   return screenshots;
 }
 
+async function urlToImage(url: string, width: number = 1255, height: number = 800) {
+  const browser = await createBrowser();
+  const page = await browser.newPage();
+
+  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.setViewport({ width: width, height: height });
+
+  return Buffer.from(
+    (await page.screenshot({ fullPage: true, type: 'png' })) as Uint8Array,
+  );
+}
+
 export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method === 'GET') {
+      const { url, width, height } = req.query;
+
+      if (!url || typeof url !== "string") {
+        res.status(400).send("Missing ?url parameter");
+        return;
+      }
+
+      const w = width ? parseInt(width as string, 10) : 1255;
+      const h = height ? parseInt(height as string, 10) : 800;
+
+      const image = await urlToImage(url, w, h);
+
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate");
+      return res.status(200).send(image);
+    }
+
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
     }

@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit src/index.ts",
     "test": "nodemon -e ts -x ts-node src/actions/html-to-image/index.ts",
     "devWindows": "@powershell -Command $env:DEBUG='bot*';dotenv -- -- nodemon -e ts -x ts-node src/index.ts",
-    "build": "ncc build scripts/vercel.ts -o public -m",
+    "build": "ncc build scripts/Vercel.ts -o public -m",
     "build:bun": "bun scripts/generate-glob.ts && bun build ./src/index.ts --outdir ./dist --target bun --external abort-controller --external abortsignal --sourcemap",
     "prettier": "prettier --write 'src/**/*.ts'"
   },

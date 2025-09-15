@@ -29,7 +29,6 @@ export default createCommandHandler('patchimage', async (context) => {
   const html = replaceEmojisWithStickers(formattedHtml, stickers);
 
   const buffers = await Vercel.htmlToImage(html);
-  console.log(buffers);
 
   if (!buffers.length) {
     return context.reply('Не удалось получить изображения');
